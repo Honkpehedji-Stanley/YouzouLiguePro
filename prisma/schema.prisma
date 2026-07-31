@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Position {
+  PG
+  SG
+  SF
+  PF
+  C
+}
+
+enum GameStatus {
+  SCHEDULED
+  LIVE
+  FINAL
+  POSTPONED
+  CANCELLED
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  EDITOR
+}
+
+model Team {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  shortName String?
+  city      String?
+  logoUrl   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  rosterEntries TeamPlayerSeason[]
+  homeGames     Game[]             @relation("HomeTeam")
+  awayGames     Game[]             @relation("AwayTeam")
+  gameStats     PlayerGameStat[]
+}
+
+model Player {
+  id        String    @id @default(cuid())
+  slug      String    @unique
+  firstName String
+  lastName  String
+  birthDate DateTime?
+  heightCm  Int?
+  position  Position?
+  photoUrl  String?
+  bio       String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  rosterEntries TeamPlayerSeason[]
+  gameStats     PlayerGameStat[]
+}
+
+model Season {
+  id        String   @id @default(cuid())
+  label     String   @unique
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(false)
+
+  rosterEntries TeamPlayerSeason[]
+  games         Game[]
+}
+
+// Historique des affectations joueur -> équipe par saison.
+// Un joueur sans entrée active pour la saison courante = base future pour la "free agency".
+model TeamPlayerSeason {
+  id           String    @id @default(cuid())
+  playerId     String
+  teamId       String
+  seasonId     String
+  jerseyNumber Int?
+  isActive     Boolean   @default(true)
+  joinedAt     DateTime  @default(now())
+  leftAt       DateTime?
+
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  season Season @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@unique([playerId, teamId, seasonId])
+  @@index([seasonId, teamId])
+}
+
+model Game {
+  id          String     @id @default(cuid())
+  seasonId    String
+  homeTeamId  String
+  awayTeamId  String
+  scheduledAt DateTime
+  venue       String?
+  status      GameStatus @default(SCHEDULED)
+  homeScore   Int?
+  awayScore   Int?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  season   Season           @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  homeTeam Team             @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam Team             @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  stats    PlayerGameStat[]
+
+  @@index([seasonId, scheduledAt])
+}
+
+model PlayerGameStat {
+  id       String @id @default(cuid())
+  gameId   String
+  playerId String
+  teamId   String // équipe du joueur pour ce match précis (gère les transferts en cours de saison)
+
+  minutes        Int     @default(0)
+  points         Int     @default(0)
+  reboundsOff    Int     @default(0)
+  reboundsDef    Int     @default(0)
+  assists        Int     @default(0)
+  steals         Int     @default(0)
+  blocks         Int     @default(0)
+  turnovers      Int     @default(0)
+  fouls          Int     @default(0)
+  fgMade         Int     @default(0)
+  fgAttempted    Int     @default(0)
+  threeMade      Int     @default(0)
+  threeAttempted Int     @default(0)
+  ftMade         Int     @default(0)
+  ftAttempted    Int     @default(0)
+  didNotPlay     Boolean @default(false)
+
+  game   Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  team   Team   @relation(fields: [teamId], references: [id])
+
+  @@unique([gameId, playerId])
+  @@index([playerId])
+}
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String?
+  role         AdminRole @default(EDITOR)
+  createdAt    DateTime  @default(now())
+}

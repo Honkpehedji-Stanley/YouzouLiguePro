@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: youzon
+      POSTGRES_PASSWORD: youzon
+      POSTGRES_DB: youzon_ligue_pro
+    ports:
+      - "5434:5432"
+    volumes:
+      - youzon_db_data:/var/lib/postgresql/data
+
+volumes:
+  youzon_db_data:

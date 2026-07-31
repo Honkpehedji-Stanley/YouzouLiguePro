@@ -1,0 +1,73 @@
+import Link from "next/link";
+import { prisma } from "@/lib/prisma";
+import { createTeam } from "@/lib/actions/teams";
+
+export default async function AdminTeamsPage() {
+  const teams = await prisma.team.findMany({ orderBy: { name: "asc" } });
+
+  return (
+    <div className="grid gap-8 md:grid-cols-2">
+      <div>
+        <h1 className="mb-4 text-xl font-bold">Équipes</h1>
+        <ul className="divide-y divide-black/10 dark:divide-white/10">
+          {teams.map((team) => (
+            <li key={team.id} className="flex items-center justify-between py-3">
+              <div>
+                <p className="font-medium">{team.name}</p>
+                {team.city && (
+                  <p className="text-sm text-black/60 dark:text-white/60">
+                    {team.city}
+                  </p>
+                )}
+              </div>
+              <Link
+                href={`/admin/teams/${team.id}`}
+                className="text-sm text-orange-500 underline"
+              >
+                Modifier
+              </Link>
+            </li>
+          ))}
+          {teams.length === 0 && (
+            <p className="py-3 text-sm text-black/60 dark:text-white/60">
+              Aucune équipe pour l’instant.
+            </p>
+          )}
+        </ul>
+      </div>
+
+      <div>
+        <h2 className="mb-4 text-lg font-semibold">Ajouter une équipe</h2>
+        <form action={createTeam} className="flex flex-col gap-3">
+          <input
+            name="name"
+            placeholder="Nom de l’équipe"
+            required
+            className="rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+          />
+          <input
+            name="shortName"
+            placeholder="Nom court (ex: EFPN)"
+            className="rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+          />
+          <input
+            name="city"
+            placeholder="Ville"
+            className="rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+          />
+          <input
+            name="logoUrl"
+            placeholder="URL du logo (optionnel)"
+            className="rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+          />
+          <button
+            type="submit"
+            className="mt-2 rounded-md bg-orange-500 px-4 py-2 font-semibold text-white hover:bg-orange-600"
+          >
+            Créer
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
