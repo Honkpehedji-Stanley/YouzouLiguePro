@@ -51,13 +51,13 @@ export default async function AdminPlayerEditPage({
               name="firstName"
               defaultValue={player.firstName}
               required
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
             />
             <input
               name="lastName"
               defaultValue={player.lastName}
               required
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
             />
           </div>
           <div className="flex gap-3">
@@ -65,20 +65,20 @@ export default async function AdminPlayerEditPage({
               name="birthDate"
               type="date"
               defaultValue={birthDateValue}
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
             />
             <input
               name="heightCm"
               type="number"
               defaultValue={player.heightCm ?? ""}
               placeholder="Taille (cm)"
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
             />
           </div>
           <select
             name="position"
             defaultValue={player.position ?? ""}
-            className="rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+            className="rounded-md border border-black/20 px-3 py-2"
           >
             <option value="">Poste (optionnel)</option>
             {POSITIONS.map((pos) => (
@@ -91,17 +91,17 @@ export default async function AdminPlayerEditPage({
             name="photoUrl"
             defaultValue={player.photoUrl ?? ""}
             placeholder="URL de la photo"
-            className="rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+            className="rounded-md border border-black/20 px-3 py-2"
           />
           <textarea
             name="bio"
             defaultValue={player.bio ?? ""}
             rows={3}
-            className="rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+            className="rounded-md border border-black/20 px-3 py-2"
           />
           <button
             type="submit"
-            className="mt-2 rounded-md bg-orange-500 px-4 py-2 font-semibold text-white hover:bg-orange-600"
+            className="mt-2 rounded-md bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark"
           >
             Enregistrer
           </button>
@@ -119,7 +119,7 @@ export default async function AdminPlayerEditPage({
           <select
             name="teamId"
             required
-            className="rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+            className="rounded-md border border-black/20 px-3 py-2"
           >
             <option value="">Équipe</option>
             {teams.map((team) => (
@@ -132,7 +132,7 @@ export default async function AdminPlayerEditPage({
             name="seasonId"
             required
             defaultValue={activeSeason?.id}
-            className="rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+            className="rounded-md border border-black/20 px-3 py-2"
           >
             {seasons.map((season) => (
               <option key={season.id} value={season.id}>
@@ -144,20 +144,20 @@ export default async function AdminPlayerEditPage({
             name="jerseyNumber"
             type="number"
             placeholder="N°"
-            className="w-20 rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+            className="w-20 rounded-md border border-black/20 px-3 py-2"
           />
           <button
             type="submit"
-            className="rounded-md bg-orange-500 px-4 py-2 font-semibold text-white hover:bg-orange-600"
+            className="rounded-md bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark"
           >
             Affecter
           </button>
         </form>
 
-        <h3 className="mb-2 text-sm font-semibold text-black/60 dark:text-white/60">
+        <h3 className="mb-2 text-sm font-semibold text-black/60">
           Historique
         </h3>
-        <ul className="divide-y divide-black/10 dark:divide-white/10">
+        <ul className="divide-y divide-black/10">
           {player.rosterEntries.map((entry) => {
             const releaseWithIds = releasePlayerFromTeam.bind(
               null,
@@ -182,7 +182,7 @@ export default async function AdminPlayerEditPage({
             );
           })}
           {player.rosterEntries.length === 0 && (
-            <p className="py-2 text-sm text-black/60 dark:text-white/60">
+            <p className="py-2 text-sm text-black/60">
               Aucune affectation pour l’instant.
             </p>
           )}

@@ -25,12 +25,12 @@ export default async function PlayersPage() {
             <li key={player.id}>
               <Link
                 href={`/joueurs/${player.slug}`}
-                className="flex items-center justify-between rounded-md border border-black/10 px-3 py-2 hover:border-orange-500 dark:border-white/10"
+                className="flex items-center justify-between rounded-md border border-black/10 px-3 py-2 hover:border-brand"
               >
                 <span>
                   {player.firstName} {player.lastName}
                 </span>
-                <span className="text-sm text-black/60 dark:text-white/60">
+                <span className="text-sm text-black/60">
                   {currentTeam?.name ?? "Agent libre"}
                 </span>
               </Link>
@@ -38,7 +38,7 @@ export default async function PlayersPage() {
           );
         })}
         {players.length === 0 && (
-          <p className="text-black/60 dark:text-white/60">
+          <p className="text-black/60">
             Aucun joueur enregistré pour l’instant.
           </p>
         )}

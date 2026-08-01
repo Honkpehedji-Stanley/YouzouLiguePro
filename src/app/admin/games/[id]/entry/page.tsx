@@ -47,11 +47,11 @@ export default async function GameEntryPage({
     teamName: string,
     roster: typeof rosterEntries
   ) => (
-    <details open className="rounded-lg border border-black/10 dark:border-white/10">
-      <summary className="cursor-pointer bg-black/5 px-4 py-3 font-semibold dark:bg-white/5">
+    <details open className="rounded-lg border border-black/10">
+      <summary className="cursor-pointer bg-black/5 px-4 py-3 font-semibold">
         {teamName} ({roster.length} joueurs)
       </summary>
-      <div className="divide-y divide-black/10 dark:divide-white/10">
+      <div className="divide-y divide-black/10">
         {roster.map((entry) => {
           const existing = statsByPlayerId.get(entry.playerId);
           const prefix = `stat__${entry.playerId}__`;
@@ -73,7 +73,7 @@ export default async function GameEntryPage({
                 <NumberStepper name={`${prefix}minutes`} label="Min" defaultValue={existing?.minutes} />
               </div>
               <details className="mt-3">
-                <summary className="cursor-pointer text-xs text-black/60 dark:text-white/60">
+                <summary className="cursor-pointer text-xs text-black/60">
                   Détail des tirs
                 </summary>
                 <div className="mt-2 flex flex-wrap gap-3">
@@ -89,7 +89,7 @@ export default async function GameEntryPage({
           );
         })}
         {roster.length === 0 && (
-          <p className="px-4 py-4 text-sm text-black/60 dark:text-white/60">
+          <p className="px-4 py-4 text-sm text-black/60">
             Aucun joueur affecté à cette équipe pour cette saison. Affectez des
             joueurs depuis la page Joueurs avant de saisir ce match.
           </p>
@@ -103,7 +103,7 @@ export default async function GameEntryPage({
       <h1 className="mb-1 text-xl font-bold">
         {game.homeTeam.name} vs {game.awayTeam.name}
       </h1>
-      <p className="mb-6 text-sm text-black/60 dark:text-white/60">
+      <p className="mb-6 text-sm text-black/60">
         {formatDateTime(game.scheduledAt)} · {game.season.label} ·{" "}
         {game.status === "FINAL" ? "Terminé" : game.status === "LIVE" ? "En cours" : "À venir"}
       </p>
@@ -113,7 +113,7 @@ export default async function GameEntryPage({
         {renderTeamSection(game.awayTeam.name, awayRoster)}
       </form>
 
-      <div className="mt-6 flex flex-wrap items-end gap-4 border-t border-black/10 pt-6 dark:border-white/10">
+      <div className="mt-6 flex flex-wrap items-end gap-4 border-t border-black/10 pt-6">
         <label className="text-sm">
           Score final {game.homeTeam.shortName ?? game.homeTeam.name} (optionnel, sinon calculé)
           <input
@@ -122,7 +122,7 @@ export default async function GameEntryPage({
             type="number"
             min={0}
             defaultValue={game.homeScore ?? ""}
-            className="mt-1 block w-28 rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+            className="mt-1 block w-28 rounded-md border border-black/20 px-3 py-2"
           />
         </label>
         <label className="text-sm">
@@ -133,7 +133,7 @@ export default async function GameEntryPage({
             type="number"
             min={0}
             defaultValue={game.awayScore ?? ""}
-            className="mt-1 block w-28 rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+            className="mt-1 block w-28 rounded-md border border-black/20 px-3 py-2"
           />
         </label>
       </div>
@@ -143,7 +143,7 @@ export default async function GameEntryPage({
           form="game-entry-form"
           formAction={saveDraft}
           type="submit"
-          className="rounded-md border border-orange-500 px-4 py-2 font-semibold text-orange-500 hover:bg-orange-500/10"
+          className="rounded-md border border-brand px-4 py-2 font-semibold text-brand hover:bg-brand/10"
         >
           Enregistrer le brouillon
         </button>
@@ -151,7 +151,7 @@ export default async function GameEntryPage({
           form="game-entry-form"
           formAction={finalize}
           type="submit"
-          className="rounded-md bg-orange-500 px-4 py-2 font-semibold text-white hover:bg-orange-600"
+          className="rounded-md bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark"
         >
           Clôturer le match
         </button>

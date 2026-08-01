@@ -19,10 +19,10 @@ export default async function AdminLayout({
   return (
     <div>
       {session && (
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-black/10 pb-4 dark:border-white/10">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-black/10 pb-4">
           <nav className="flex flex-wrap gap-4 text-sm font-medium">
             {ADMIN_LINKS.map((link) => (
-              <Link key={link.href} href={link.href} className="hover:text-orange-500">
+              <Link key={link.href} href={link.href} className="hover:text-brand">
                 {link.label}
               </Link>
             ))}
@@ -33,7 +33,7 @@ export default async function AdminLayout({
               await signOut({ redirectTo: "/admin/login" });
             }}
           >
-            <span className="mr-3 text-sm text-black/60 dark:text-white/60">
+            <span className="mr-3 text-sm text-black/60">
               {session.user.email}
             </span>
             <button type="submit" className="text-sm underline">

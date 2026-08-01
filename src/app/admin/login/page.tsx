@@ -43,7 +43,7 @@ export default async function AdminLoginPage({
             type="email"
             required
             autoFocus
-            className="w-full rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+            className="w-full rounded-md border border-black/20 px-3 py-2"
           />
         </div>
         <div>
@@ -58,7 +58,7 @@ export default async function AdminLoginPage({
             name="password"
             type="password"
             required
-            className="w-full rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+            className="w-full rounded-md border border-black/20 px-3 py-2"
           />
         </div>
         {error && (
@@ -68,7 +68,7 @@ export default async function AdminLoginPage({
         )}
         <button
           type="submit"
-          className="mt-2 rounded-md bg-orange-500 px-4 py-2 font-semibold text-white hover:bg-orange-600"
+          className="mt-2 rounded-md bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark"
         >
           Se connecter
         </button>

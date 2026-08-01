@@ -13,7 +13,7 @@ export default async function AdminPlayersPage() {
     <div className="grid gap-8 md:grid-cols-2">
       <div>
         <h1 className="mb-4 text-xl font-bold">Joueurs</h1>
-        <ul className="divide-y divide-black/10 dark:divide-white/10">
+        <ul className="divide-y divide-black/10">
           {players.map((player) => (
             <li key={player.id} className="flex items-center justify-between py-3">
               <div>
@@ -21,21 +21,21 @@ export default async function AdminPlayersPage() {
                   {player.firstName} {player.lastName}
                 </p>
                 {player.position && (
-                  <p className="text-sm text-black/60 dark:text-white/60">
+                  <p className="text-sm text-black/60">
                     {player.position}
                   </p>
                 )}
               </div>
               <Link
                 href={`/admin/players/${player.id}`}
-                className="text-sm text-orange-500 underline"
+                className="text-sm text-brand underline"
               >
                 Modifier
               </Link>
             </li>
           ))}
           {players.length === 0 && (
-            <p className="py-3 text-sm text-black/60 dark:text-white/60">
+            <p className="py-3 text-sm text-black/60">
               Aucun joueur pour l’instant.
             </p>
           )}
@@ -50,32 +50,32 @@ export default async function AdminPlayersPage() {
               name="firstName"
               placeholder="Prénom"
               required
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
             />
             <input
               name="lastName"
               placeholder="Nom"
               required
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
             />
           </div>
           <div className="flex gap-3">
             <input
               name="birthDate"
               type="date"
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
             />
             <input
               name="heightCm"
               type="number"
               placeholder="Taille (cm)"
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
             />
           </div>
           <select
             name="position"
             defaultValue=""
-            className="rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+            className="rounded-md border border-black/20 px-3 py-2"
           >
             <option value="">Poste (optionnel)</option>
             {POSITIONS.map((pos) => (
@@ -87,17 +87,17 @@ export default async function AdminPlayersPage() {
           <input
             name="photoUrl"
             placeholder="URL de la photo (optionnel)"
-            className="rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+            className="rounded-md border border-black/20 px-3 py-2"
           />
           <textarea
             name="bio"
             placeholder="Bio (optionnel)"
             rows={3}
-            className="rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+            className="rounded-md border border-black/20 px-3 py-2"
           />
           <button
             type="submit"
-            className="mt-2 rounded-md bg-orange-500 px-4 py-2 font-semibold text-white hover:bg-orange-600"
+            className="mt-2 rounded-md bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark"
           >
             Créer
           </button>

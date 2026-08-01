@@ -5,7 +5,7 @@ import { randomBytes } from "crypto";
 const prisma = new PrismaClient();
 
 async function main() {
-  const adminEmail = process.env.SEED_ADMIN_EMAIL ?? "admin@youzonliguepro.bj";
+  const adminEmail = process.env.SEED_ADMIN_EMAIL ?? "admin@youzouliguepro.bj";
   const existingAdmin = await prisma.adminUser.findUnique({
     where: { email: adminEmail },
   });

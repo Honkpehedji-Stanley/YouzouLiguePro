@@ -34,7 +34,7 @@ function BoxScoreTable({
       <h2 className="mb-3 text-lg font-semibold">{teamName}</h2>
       <table className="w-full min-w-[560px] text-sm">
         <thead>
-          <tr className="border-b border-black/10 text-left dark:border-white/10">
+          <tr className="border-b border-black/10 text-left">
             <th className="py-2 pr-3">Joueur</th>
             <th className="py-2 pr-3 text-right">Min</th>
             <th className="py-2 pr-3 text-right">Pts</th>
@@ -48,9 +48,9 @@ function BoxScoreTable({
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.playerId} className="border-b border-black/5 dark:border-white/5">
+            <tr key={row.playerId} className="border-b border-black/5">
               <td className="py-2 pr-3">
-                <Link href={`/joueurs/${row.playerSlug}`} className="hover:text-orange-500">
+                <Link href={`/joueurs/${row.playerSlug}`} className="hover:text-brand">
                   {row.playerName}
                 </Link>
               </td>
@@ -66,7 +66,7 @@ function BoxScoreTable({
           ))}
           {rows.length === 0 && (
             <tr>
-              <td colSpan={9} className="py-4 text-black/60 dark:text-white/60">
+              <td colSpan={9} className="py-4 text-black/60">
                 Aucune statistique enregistrée pour cette équipe.
               </td>
             </tr>
@@ -131,12 +131,12 @@ export default async function GameDetailPage({
 
   return (
     <div>
-      <p className="mb-1 text-black/60 dark:text-white/60">
+      <p className="mb-1 text-black/60">
         {game.season.label} · {formatDateTime(game.scheduledAt)}
         {game.venue && ` · ${game.venue}`}
       </p>
-      <div className="mb-8 flex items-center justify-between rounded-lg border border-black/10 p-6 dark:border-white/10">
-        <Link href={`/equipes/${game.homeTeam.slug}`} className="text-xl font-bold hover:text-orange-500">
+      <div className="mb-8 flex items-center justify-between rounded-lg border border-black/10 p-6">
+        <Link href={`/equipes/${game.homeTeam.slug}`} className="text-xl font-bold hover:text-brand">
           {game.homeTeam.name}
         </Link>
         <div className="text-3xl font-bold">
@@ -145,10 +145,10 @@ export default async function GameDetailPage({
               {game.homeScore} - {game.awayScore}
             </span>
           ) : (
-            <span className="text-lg text-black/60 dark:text-white/60">vs</span>
+            <span className="text-lg text-black/60">vs</span>
           )}
         </div>
-        <Link href={`/equipes/${game.awayTeam.slug}`} className="text-xl font-bold hover:text-orange-500">
+        <Link href={`/equipes/${game.awayTeam.slug}`} className="text-xl font-bold hover:text-brand">
           {game.awayTeam.name}
         </Link>
       </div>

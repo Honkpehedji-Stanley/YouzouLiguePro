@@ -33,7 +33,7 @@ export default async function AdminSchedulePage() {
     <div className="grid gap-8 md:grid-cols-2">
       <div>
         <h1 className="mb-4 text-xl font-bold">Calendrier</h1>
-        <ul className="divide-y divide-black/10 dark:divide-white/10">
+        <ul className="divide-y divide-black/10">
           {games.map((game) => (
             <li key={game.id} className="py-3">
               <div className="flex items-center justify-between">
@@ -42,12 +42,12 @@ export default async function AdminSchedulePage() {
                 </p>
                 <Link
                   href={`/admin/games/${game.id}/entry`}
-                  className="text-sm text-orange-500 underline"
+                  className="text-sm text-brand underline"
                 >
                   Saisir le match
                 </Link>
               </div>
-              <p className="text-sm text-black/60 dark:text-white/60">
+              <p className="text-sm text-black/60">
                 {formatDateTime(game.scheduledAt)} · {game.season.label} ·{" "}
                 {STATUS_LABELS[game.status]}
                 {game.status === "FINAL" &&
@@ -56,7 +56,7 @@ export default async function AdminSchedulePage() {
             </li>
           ))}
           {games.length === 0 && (
-            <p className="py-3 text-sm text-black/60 dark:text-white/60">
+            <p className="py-3 text-sm text-black/60">
               Aucun match programmé.
             </p>
           )}
@@ -70,7 +70,7 @@ export default async function AdminSchedulePage() {
             name="seasonId"
             required
             defaultValue={activeSeason?.id}
-            className="rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+            className="rounded-md border border-black/20 px-3 py-2"
           >
             {seasons.map((season) => (
               <option key={season.id} value={season.id}>
@@ -81,7 +81,7 @@ export default async function AdminSchedulePage() {
           <select
             name="homeTeamId"
             required
-            className="rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+            className="rounded-md border border-black/20 px-3 py-2"
           >
             <option value="">Équipe à domicile</option>
             {teams.map((team) => (
@@ -93,7 +93,7 @@ export default async function AdminSchedulePage() {
           <select
             name="awayTeamId"
             required
-            className="rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+            className="rounded-md border border-black/20 px-3 py-2"
           >
             <option value="">Équipe à l’extérieur</option>
             {teams.map((team) => (
@@ -106,16 +106,16 @@ export default async function AdminSchedulePage() {
             name="scheduledAt"
             type="datetime-local"
             required
-            className="rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+            className="rounded-md border border-black/20 px-3 py-2"
           />
           <input
             name="venue"
             placeholder="Lieu (optionnel)"
-            className="rounded-md border border-black/20 px-3 py-2 dark:border-white/20 dark:bg-black"
+            className="rounded-md border border-black/20 px-3 py-2"
           />
           <button
             type="submit"
-            className="mt-2 rounded-md bg-orange-500 px-4 py-2 font-semibold text-white hover:bg-orange-600"
+            className="mt-2 rounded-md bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark"
           >
             Programmer
           </button>

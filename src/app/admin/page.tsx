@@ -22,10 +22,10 @@ export default async function AdminHomePage() {
           <Link
             key={card.label}
             href={card.href}
-            className="rounded-lg border border-black/10 p-5 hover:border-orange-500 dark:border-white/10"
+            className="rounded-lg border border-black/10 p-5 hover:border-brand"
           >
             <p className="text-3xl font-bold">{card.value}</p>
-            <p className="text-sm text-black/60 dark:text-white/60">{card.label}</p>
+            <p className="text-sm text-black/60">{card.label}</p>
           </Link>
         ))}
       </div>

@@ -24,13 +24,13 @@ function StatBlock({ label, averages }: { label: string; averages: Awaited<Retur
           { l: "CT", v: averages.blocks },
           { l: "BP", v: averages.turnovers },
         ].map((stat) => (
-          <div key={stat.l} className="rounded-lg border border-black/10 p-3 text-center dark:border-white/10">
+          <div key={stat.l} className="rounded-lg border border-black/10 p-3 text-center">
             <p className="text-xl font-bold">{stat.v}</p>
-            <p className="text-xs text-black/60 dark:text-white/60">{stat.l}/match</p>
+            <p className="text-xs text-black/60">{stat.l}/match</p>
           </div>
         ))}
       </div>
-      <p className="mt-2 text-sm text-black/60 dark:text-white/60">
+      <p className="mt-2 text-sm text-black/60">
         {averages.gamesPlayed} match{averages.gamesPlayed > 1 ? "s" : ""} joué
         {averages.gamesPlayed > 1 ? "s" : ""}
       </p>
@@ -70,10 +70,10 @@ export default async function PlayerDetailPage({
       <h1 className="mb-1 text-2xl font-bold">
         {player.firstName} {player.lastName}
       </h1>
-      <p className="mb-6 text-black/60 dark:text-white/60">
+      <p className="mb-6 text-black/60">
         {currentTeamEntry ? (
           <>
-            <Link href={`/equipes/${currentTeamEntry.team.slug}`} className="hover:text-orange-500">
+            <Link href={`/equipes/${currentTeamEntry.team.slug}`} className="hover:text-brand">
               {currentTeamEntry.team.name}
             </Link>
             {currentTeamEntry.jerseyNumber != null && ` · #${currentTeamEntry.jerseyNumber}`}
@@ -88,7 +88,7 @@ export default async function PlayerDetailPage({
       {player.bio && <p className="mb-8 max-w-2xl">{player.bio}</p>}
 
       {player.birthDate && (
-        <p className="mb-8 text-sm text-black/60 dark:text-white/60">
+        <p className="mb-8 text-sm text-black/60">
           Né le {formatDate(player.birthDate)}
         </p>
       )}
@@ -101,7 +101,7 @@ export default async function PlayerDetailPage({
           <StatBlock label="Carrière" averages={careerAverages} />
         )}
         {careerAverages.gamesPlayed === 0 && (
-          <p className="text-black/60 dark:text-white/60">
+          <p className="text-black/60">
             Aucune statistique enregistrée pour l’instant.
           </p>
         )}

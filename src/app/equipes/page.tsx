@@ -12,16 +12,16 @@ export default async function TeamsPage() {
           <Link
             key={team.id}
             href={`/equipes/${team.slug}`}
-            className="rounded-lg border border-black/10 p-5 hover:border-orange-500 dark:border-white/10"
+            className="rounded-lg border border-black/10 p-5 hover:border-brand"
           >
             <p className="font-semibold">{team.name}</p>
             {team.city && (
-              <p className="text-sm text-black/60 dark:text-white/60">{team.city}</p>
+              <p className="text-sm text-black/60">{team.city}</p>
             )}
           </Link>
         ))}
         {teams.length === 0 && (
-          <p className="text-black/60 dark:text-white/60">
+          <p className="text-black/60">
             Aucune équipe enregistrée pour l’instant.
           </p>
         )}

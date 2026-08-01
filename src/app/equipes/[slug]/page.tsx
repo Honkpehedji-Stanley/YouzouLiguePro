@@ -42,7 +42,7 @@ export default async function TeamDetailPage({
   return (
     <div>
       <h1 className="mb-1 text-2xl font-bold">{team.name}</h1>
-      {team.city && <p className="mb-6 text-black/60 dark:text-white/60">{team.city}</p>}
+      {team.city && <p className="mb-6 text-black/60">{team.city}</p>}
 
       {averages && averages.gamesPlayed > 0 && (
         <div className="mb-8 grid grid-cols-3 gap-4 sm:grid-cols-6">
@@ -54,9 +54,9 @@ export default async function TeamDetailPage({
             { label: "CT", value: averages.blocks },
             { label: "BP", value: averages.turnovers },
           ].map((stat) => (
-            <div key={stat.label} className="rounded-lg border border-black/10 p-3 text-center dark:border-white/10">
+            <div key={stat.label} className="rounded-lg border border-black/10 p-3 text-center">
               <p className="text-xl font-bold">{stat.value}</p>
-              <p className="text-xs text-black/60 dark:text-white/60">{stat.label}/match</p>
+              <p className="text-xs text-black/60">{stat.label}/match</p>
             </div>
           ))}
         </div>
@@ -69,12 +69,12 @@ export default async function TeamDetailPage({
             <li key={entry.id}>
               <Link
                 href={`/joueurs/${entry.player.slug}`}
-                className="flex items-center justify-between rounded-md border border-black/10 px-3 py-2 hover:border-orange-500 dark:border-white/10"
+                className="flex items-center justify-between rounded-md border border-black/10 px-3 py-2 hover:border-brand"
               >
                 <span>
                   {entry.player.firstName} {entry.player.lastName}
                 </span>
-                <span className="text-sm text-black/60 dark:text-white/60">
+                <span className="text-sm text-black/60">
                   {entry.jerseyNumber != null && `#${entry.jerseyNumber}`}{" "}
                   {entry.player.position}
                 </span>
@@ -82,7 +82,7 @@ export default async function TeamDetailPage({
             </li>
           ))}
           {roster.length === 0 && (
-            <p className="text-black/60 dark:text-white/60">
+            <p className="text-black/60">
               Effectif non renseigné pour la saison en cours.
             </p>
           )}
@@ -91,17 +91,17 @@ export default async function TeamDetailPage({
 
       <section>
         <h2 className="mb-3 text-lg font-semibold">Calendrier & résultats</h2>
-        <ul className="divide-y divide-black/10 dark:divide-white/10">
+        <ul className="divide-y divide-black/10">
           {games.map((game) => {
             const opponent = game.homeTeamId === team.id ? game.awayTeam : game.homeTeam;
             const isHome = game.homeTeamId === team.id;
             return (
               <li key={game.id} className="py-3">
-                <Link href={`/matchs/${game.id}`} className="flex items-center justify-between hover:text-orange-500">
+                <Link href={`/matchs/${game.id}`} className="flex items-center justify-between hover:text-brand">
                   <span>
                     {isHome ? "vs" : "@"} {opponent.name}
                   </span>
-                  <span className="text-sm text-black/60 dark:text-white/60">
+                  <span className="text-sm text-black/60">
                     {game.status === "FINAL"
                       ? `${game.homeScore} - ${game.awayScore}`
                       : formatDate(game.scheduledAt)}
@@ -111,7 +111,7 @@ export default async function TeamDetailPage({
             );
           })}
           {games.length === 0 && (
-            <p className="py-3 text-black/60 dark:text-white/60">
+            <p className="py-3 text-black/60">
               Aucun match programmé pour l’instant.
             </p>
           )}
