@@ -1,3 +1,4 @@
+import { Category, Conference } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 export function getActiveSeason() {
@@ -16,36 +17,48 @@ export type StandingRow = {
   pointDiff: number;
 };
 
-export async function getStandings(seasonId: string): Promise<StandingRow[]> {
-  const games = await prisma.game.findMany({
-    where: { seasonId, status: "FINAL" },
-    include: { homeTeam: true, awayTeam: true },
+export async function getStandings(
+  seasonId: string,
+  conference: Conference,
+  category: Category
+): Promise<StandingRow[]> {
+  const teamSeasons = await prisma.teamSeason.findMany({
+    where: { seasonId, conference, team: { category } },
+    include: { team: true },
   });
 
   const rows = new Map<string, StandingRow>();
+  for (const { team } of teamSeasons) {
+    rows.set(team.id, {
+      teamId: team.id,
+      team,
+      wins: 0,
+      losses: 0,
+      gamesPlayed: 0,
+      winPct: 0,
+      pointsFor: 0,
+      pointsAgainst: 0,
+      pointDiff: 0,
+    });
+  }
 
-  const ensureRow = (team: { id: string; slug: string; name: string; logoUrl: string | null }) => {
-    if (!rows.has(team.id)) {
-      rows.set(team.id, {
-        teamId: team.id,
-        team,
-        wins: 0,
-        losses: 0,
-        gamesPlayed: 0,
-        winPct: 0,
-        pointsFor: 0,
-        pointsAgainst: 0,
-        pointDiff: 0,
-      });
-    }
-    return rows.get(team.id)!;
-  };
+  if (rows.size === 0) return [];
+
+  const teamIds = Array.from(rows.keys());
+  const games = await prisma.game.findMany({
+    where: {
+      seasonId,
+      status: "FINAL",
+      homeTeamId: { in: teamIds },
+      awayTeamId: { in: teamIds },
+    },
+  });
 
   for (const game of games) {
     if (game.homeScore == null || game.awayScore == null) continue;
-
-    const home = ensureRow(game.homeTeam);
-    const away = ensureRow(game.awayTeam);
+    const home = rows.get(game.homeTeamId);
+    const away = rows.get(game.awayTeamId);
+    if (!home || !away) continue;
 
     home.gamesPlayed += 1;
     away.gamesPlayed += 1;

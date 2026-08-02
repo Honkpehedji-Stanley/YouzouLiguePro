@@ -1,7 +1,9 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getActiveSeason, getTeamSeasonAverages } from "@/lib/stats";
+import { CATEGORY_LABELS, CONFERENCE_LABELS } from "@/lib/league";
 
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(date);
@@ -18,7 +20,7 @@ export default async function TeamDetailPage({
 
   const season = await getActiveSeason();
 
-  const [roster, games, averages] = await Promise.all([
+  const [roster, games, averages, teamSeason] = await Promise.all([
     season
       ? prisma.teamPlayerSeason.findMany({
           where: { teamId: team.id, seasonId: season.id, isActive: true },
@@ -37,12 +39,34 @@ export default async function TeamDetailPage({
         })
       : Promise.resolve([]),
     season ? getTeamSeasonAverages(team.id, season.id) : null,
+    season
+      ? prisma.teamSeason.findUnique({
+          where: { teamId_seasonId: { teamId: team.id, seasonId: season.id } },
+        })
+      : null,
   ]);
 
   return (
     <div>
-      <h1 className="mb-1 text-2xl font-bold">{team.name}</h1>
-      {team.city && <p className="mb-6 text-black/60">{team.city}</p>}
+      <div className="mb-6 flex items-center gap-4">
+        {team.logoUrl && (
+          <Image
+            src={team.logoUrl}
+            alt={team.name}
+            width={64}
+            height={64}
+            className="rounded-md object-cover"
+          />
+        )}
+        <div>
+          <h1 className="text-2xl font-bold">{team.name}</h1>
+          <p className="text-black/60">
+            {CATEGORY_LABELS[team.category]}
+            {teamSeason && ` · Conférence ${CONFERENCE_LABELS[teamSeason.conference]}`}
+            {team.city && ` · ${team.city}`}
+          </p>
+        </div>
+      </div>
 
       {averages && averages.gamesPlayed > 0 && (
         <div className="mb-8 grid grid-cols-3 gap-4 sm:grid-cols-6">

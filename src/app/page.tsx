@@ -29,7 +29,7 @@ export default async function HomePage() {
           take: 5,
         })
       : Promise.resolve([]),
-    season ? getStandings(season.id) : [],
+    season ? getStandings(season.id, "SUD", "HOMMES") : [],
   ]);
 
   return (
@@ -96,7 +96,7 @@ export default async function HomePage() {
         </section>
 
         <section>
-          <h2 className="mb-4 text-lg font-semibold">Classement</h2>
+          <h2 className="mb-4 text-lg font-semibold">Classement · Hommes Sud</h2>
           <ol className="flex flex-col gap-2">
             {standings.slice(0, 5).map((row, index) => (
               <li key={row.teamId} className="flex items-center justify-between text-sm">

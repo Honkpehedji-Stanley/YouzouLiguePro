@@ -28,10 +28,21 @@ enum AdminRole {
   EDITOR
 }
 
+enum Category {
+  HOMMES
+  DAMES
+}
+
+enum Conference {
+  SUD
+  NORD
+}
+
 model Team {
   id        String   @id @default(cuid())
   slug      String   @unique
   name      String
+  category  Category
   shortName String?
   city      String?
   logoUrl   String?
@@ -39,6 +50,7 @@ model Team {
   updatedAt DateTime @updatedAt
 
   rosterEntries TeamPlayerSeason[]
+  seasons       TeamSeason[]
   homeGames     Game[]             @relation("HomeTeam")
   awayGames     Game[]             @relation("AwayTeam")
   gameStats     PlayerGameStat[]
@@ -69,7 +81,26 @@ model Season {
   isActive  Boolean  @default(false)
 
   rosterEntries TeamPlayerSeason[]
+  teamSeasons   TeamSeason[]
   games         Game[]
+}
+
+// Affectation d'une équipe à une conférence pour une saison donnée.
+// Une équipe sans entrée pour une saison = reléguée/absente de la ligue
+// cette saison-là (montées/descentes gérées simplement par (dis)apparition
+// de la ligne, sans modèle dédié pour l'instant).
+model TeamSeason {
+  id         String     @id @default(cuid())
+  teamId     String
+  seasonId   String
+  conference Conference
+  createdAt  DateTime   @default(now())
+
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  season Season @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, seasonId])
+  @@index([seasonId, conference])
 }
 
 // Historique des affectations joueur -> équipe par saison.

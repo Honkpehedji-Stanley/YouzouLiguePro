@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { createGame } from "@/lib/actions/games";
+import { CATEGORIES, CATEGORY_LABELS } from "@/lib/league";
 
 function formatDateTime(date: Date) {
   return new Intl.DateTimeFormat("fr-FR", {
@@ -24,7 +25,7 @@ export default async function AdminSchedulePage() {
       orderBy: { scheduledAt: "desc" },
       take: 50,
     }),
-    prisma.team.findMany({ orderBy: { name: "asc" } }),
+    prisma.team.findMany({ orderBy: [{ category: "asc" }, { name: "asc" }] }),
     prisma.season.findMany({ orderBy: { startDate: "desc" } }),
   ]);
   const activeSeason = seasons.find((s) => s.isActive) ?? seasons[0];
@@ -84,10 +85,16 @@ export default async function AdminSchedulePage() {
             className="rounded-md border border-black/20 px-3 py-2"
           >
             <option value="">Équipe à domicile</option>
-            {teams.map((team) => (
-              <option key={team.id} value={team.id}>
-                {team.name}
-              </option>
+            {CATEGORIES.map((category) => (
+              <optgroup key={category} label={CATEGORY_LABELS[category]}>
+                {teams
+                  .filter((team) => team.category === category)
+                  .map((team) => (
+                    <option key={team.id} value={team.id}>
+                      {team.name}
+                    </option>
+                  ))}
+              </optgroup>
             ))}
           </select>
           <select
@@ -96,10 +103,16 @@ export default async function AdminSchedulePage() {
             className="rounded-md border border-black/20 px-3 py-2"
           >
             <option value="">Équipe à l’extérieur</option>
-            {teams.map((team) => (
-              <option key={team.id} value={team.id}>
-                {team.name}
-              </option>
+            {CATEGORIES.map((category) => (
+              <optgroup key={category} label={CATEGORY_LABELS[category]}>
+                {teams
+                  .filter((team) => team.category === category)
+                  .map((team) => (
+                    <option key={team.id} value={team.id}>
+                      {team.name}
+                    </option>
+                  ))}
+              </optgroup>
             ))}
           </select>
           <input

@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { createTeam } from "@/lib/actions/teams";
+import { CATEGORY_LABELS } from "@/lib/league";
 
 export default async function AdminTeamsPage() {
-  const teams = await prisma.team.findMany({ orderBy: { name: "asc" } });
+  const teams = await prisma.team.findMany({
+    orderBy: [{ category: "asc" }, { name: "asc" }],
+  });
 
   return (
     <div className="grid gap-8 md:grid-cols-2">
@@ -14,11 +17,10 @@ export default async function AdminTeamsPage() {
             <li key={team.id} className="flex items-center justify-between py-3">
               <div>
                 <p className="font-medium">{team.name}</p>
-                {team.city && (
-                  <p className="text-sm text-black/60">
-                    {team.city}
-                  </p>
-                )}
+                <p className="text-sm text-black/60">
+                  {CATEGORY_LABELS[team.category]}
+                  {team.city && ` · ${team.city}`}
+                </p>
               </div>
               <Link
                 href={`/admin/teams/${team.id}`}
@@ -45,14 +47,26 @@ export default async function AdminTeamsPage() {
             required
             className="rounded-md border border-black/20 px-3 py-2"
           />
+          <select
+            name="category"
+            required
+            defaultValue=""
+            className="rounded-md border border-black/20 px-3 py-2"
+          >
+            <option value="" disabled>
+              Catégorie
+            </option>
+            <option value="HOMMES">Hommes</option>
+            <option value="DAMES">Dames</option>
+          </select>
           <input
             name="shortName"
-            placeholder="Nom court (ex: EFPN)"
+            placeholder="Nom court (ex: BBC)"
             className="rounded-md border border-black/20 px-3 py-2"
           />
           <input
             name="city"
-            placeholder="Ville"
+            placeholder="Ville (optionnel, franchise sans ville possible)"
             className="rounded-md border border-black/20 px-3 py-2"
           />
           <input
