@@ -184,3 +184,67 @@ export async function getTeamSeasonAverages(
   }
   return averages;
 }
+
+export const LEADER_METRICS = ["points", "rebounds", "assists", "steals", "blocks"] as const;
+export type LeaderMetric = (typeof LEADER_METRICS)[number];
+
+export const LEADER_METRIC_LABELS: Record<LeaderMetric, string> = {
+  points: "Points",
+  rebounds: "Rebonds",
+  assists: "Passes",
+  steals: "Interceptions",
+  blocks: "Contres",
+};
+
+export type LeaderRow = {
+  player: {
+    id: string;
+    slug: string;
+    firstName: string;
+    lastName: string;
+    photoUrl: string | null;
+  };
+  team: { id: string; slug: string; name: string } | null;
+  value: number;
+  gamesPlayed: number;
+};
+
+export async function getStatLeaders(
+  seasonId: string,
+  category: Category,
+  metric: LeaderMetric,
+  limit = 5
+): Promise<LeaderRow[]> {
+  const rows = await prisma.playerGameStat.findMany({
+    where: { didNotPlay: false, game: { seasonId }, team: { category } },
+    include: { player: true, team: true },
+  });
+
+  const byPlayer = new Map<
+    string,
+    { player: LeaderRow["player"]; team: LeaderRow["team"]; total: number; games: number }
+  >();
+
+  for (const row of rows) {
+    const value =
+      metric === "rebounds"
+        ? row.reboundsOff + row.reboundsDef
+        : row[metric as Exclude<LeaderMetric, "rebounds">];
+    if (!byPlayer.has(row.playerId)) {
+      byPlayer.set(row.playerId, { player: row.player, team: row.team, total: 0, games: 0 });
+    }
+    const entry = byPlayer.get(row.playerId)!;
+    entry.total += value;
+    entry.games += 1;
+  }
+
+  return Array.from(byPlayer.values())
+    .map((entry) => ({
+      player: entry.player,
+      team: entry.team,
+      gamesPlayed: entry.games,
+      value: Math.round((entry.total / entry.games) * 10) / 10,
+    }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, limit);
+}

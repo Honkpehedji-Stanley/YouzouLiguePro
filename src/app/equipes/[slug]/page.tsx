@@ -86,7 +86,7 @@ export default async function TeamDetailPage({
         </div>
       )}
 
-      <section className="mb-8">
+      <section id="effectif" className="mb-8 scroll-mt-20">
         <h2 className="mb-3 text-lg font-semibold">Effectif</h2>
         <ul className="grid gap-2 sm:grid-cols-2">
           {roster.map((entry) => (
@@ -113,7 +113,7 @@ export default async function TeamDetailPage({
         </ul>
       </section>
 
-      <section>
+      <section id="calendrier" className="scroll-mt-20">
         <h2 className="mb-3 text-lg font-semibold">Calendrier & résultats</h2>
         <ul className="divide-y divide-black/10">
           {games.map((game) => {

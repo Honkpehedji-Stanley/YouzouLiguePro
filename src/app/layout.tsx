@@ -13,7 +13,9 @@ const NAV_LINKS = [
   { href: "/equipes", label: "Équipes" },
   { href: "/joueurs", label: "Joueurs" },
   { href: "/calendrier", label: "Calendrier" },
+  { href: "/statistiques", label: "Statistiques" },
   { href: "/classement", label: "Classement" },
+  { href: "/agents-libres", label: "Agents libres" },
 ];
 
 export default function RootLayout({
@@ -38,7 +40,7 @@ export default function RootLayout({
                 <span className="text-brand">Youzou</span> Ligue Pro
               </span>
             </Link>
-            <nav className="flex gap-6 text-sm font-medium">
+            <nav className="flex flex-wrap justify-end gap-x-5 gap-y-1 text-sm font-medium">
               {NAV_LINKS.map((link) => (
                 <Link
                   key={link.href}
