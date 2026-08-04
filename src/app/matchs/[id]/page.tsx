@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { PageContainer } from "@/components/PageContainer";
 
 function formatDateTime(date: Date) {
   return new Intl.DateTimeFormat("fr-FR", {
@@ -130,6 +131,7 @@ export default async function GameDetailPage({
     }));
 
   return (
+    <PageContainer>
     <div>
       <p className="mb-1 text-black/60">
         {game.season.label} · {formatDateTime(game.scheduledAt)}
@@ -158,5 +160,6 @@ export default async function GameDetailPage({
         <BoxScoreTable teamName={game.awayTeam.name} rows={awayRows} />
       </div>
     </div>
+    </PageContainer>
   );
 }

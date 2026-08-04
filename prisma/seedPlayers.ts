@@ -35,6 +35,8 @@ const PLAYERS: PlayerSeed[] = [
   { firstName: "Gaoussou", lastName: "Konte", teamSlug: "energie-bbc" },
   { firstName: "Claude Arnaud", lastName: "Sognon", teamSlug: "energie-bbc" },
   { firstName: "Ghikel", lastName: "Sagbohan", teamSlug: "energie-bbc" },
+  { firstName: "Armel Frédéric Yao", lastName: "Zotchi", teamSlug: "energie-bbc" },
+  { firstName: "Chahid", lastName: "Gomez", teamSlug: "energie-bbc" },
 
   // ASPAC BBC
   { firstName: "Fadil", lastName: "Alassane", teamSlug: "aspac-bbc" },
@@ -69,6 +71,20 @@ const PLAYERS: PlayerSeed[] = [
   { firstName: "Kokou Elavagnon", lastName: "Balo", teamSlug: "elan-coton-bbc" },
   { firstName: "Abdou Matinou", lastName: "Bouraïma", teamSlug: "elan-coton-bbc" },
   { firstName: "Khaleb", lastName: "Bouraima", teamSlug: "elan-coton-bbc" },
+
+  // Renaissance BBC
+  { firstName: "Ange Fortune", lastName: "De Campos", teamSlug: "renaissance-bbc" },
+  { firstName: "Crépin Marin", lastName: "Kouye", teamSlug: "renaissance-bbc" },
+  { firstName: "Abdou Ibrahim", lastName: "Moubarack", teamSlug: "renaissance-bbc" },
+  { firstName: "Smith Semako", lastName: "Hounkpe", teamSlug: "renaissance-bbc" },
+  { firstName: "Shalom Enam", lastName: "Ahouanou", teamSlug: "renaissance-bbc" },
+  { firstName: "Kabirou Moussa", lastName: "Abakar", teamSlug: "renaissance-bbc" },
+  { firstName: "Bignon Eustache Rodrigue", lastName: "Agbo-Sekpe", teamSlug: "renaissance-bbc" },
+  { firstName: "Nathael", lastName: "Fabiyi", teamSlug: "renaissance-bbc" },
+  { firstName: "Milano Josué", lastName: "Akplogan", teamSlug: "renaissance-bbc" },
+  { firstName: "Aldiouma", lastName: "Keita", teamSlug: "renaissance-bbc" },
+  { firstName: "Kenneth", lastName: "Agossou", teamSlug: "renaissance-bbc" },
+  { firstName: "Eugène M'baapakê", lastName: "M'Po", teamSlug: "renaissance-bbc" },
 ];
 
 async function uniquePlayerSlug(firstName: string, lastName: string) {

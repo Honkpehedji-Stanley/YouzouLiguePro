@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { auth, signOut } from "@/lib/auth";
+import { PageContainer } from "@/components/PageContainer";
 
 const ADMIN_LINKS = [
   { href: "/admin", label: "Tableau de bord" },
   { href: "/admin/teams", label: "Équipes" },
   { href: "/admin/players", label: "Joueurs" },
+  { href: "/admin/players/bulk", label: "Saisie groupée" },
   { href: "/admin/seasons", label: "Saisons" },
   { href: "/admin/schedule", label: "Calendrier" },
 ];
@@ -17,7 +19,7 @@ export default async function AdminLayout({
   const session = await auth();
 
   return (
-    <div>
+    <PageContainer>
       {session && (
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-black/10 pb-4">
           <nav className="flex flex-wrap gap-4 text-sm font-medium">
@@ -43,6 +45,6 @@ export default async function AdminLayout({
         </div>
       )}
       {children}
-    </div>
+    </PageContainer>
   );
 }

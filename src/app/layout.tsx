@@ -53,9 +53,7 @@ export default function RootLayout({
             </nav>
           </div>
         </header>
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
-          {children}
-        </main>
+        <main className="flex-1 py-8">{children}</main>
         <footer className="border-t border-black/10 px-4 py-6 text-center text-sm text-black/60">
           Youzou Ligue Pro — Le basketball professionnel béninois.
         </footer>

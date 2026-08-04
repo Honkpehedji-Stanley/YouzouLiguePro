@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getActiveSeason } from "@/lib/stats";
+import { PageContainer } from "@/components/PageContainer";
 
 function formatDateTime(date: Date) {
   return new Intl.DateTimeFormat("fr-FR", {
@@ -20,7 +21,11 @@ const STATUS_LABELS: Record<string, string> = {
 export default async function CalendarPage() {
   const season = await getActiveSeason();
   if (!season) {
-    return <p>Aucune saison active pour le moment.</p>;
+    return (
+      <PageContainer>
+        <p>Aucune saison active pour le moment.</p>
+      </PageContainer>
+    );
   }
 
   const games = await prisma.game.findMany({
@@ -30,6 +35,7 @@ export default async function CalendarPage() {
   });
 
   return (
+    <PageContainer>
     <div>
       <h1 className="mb-1 text-2xl font-bold">Calendrier</h1>
       <p className="mb-6 text-black/60">{season.label}</p>
@@ -66,5 +72,6 @@ export default async function CalendarPage() {
         )}
       </ul>
     </div>
+    </PageContainer>
   );
 }

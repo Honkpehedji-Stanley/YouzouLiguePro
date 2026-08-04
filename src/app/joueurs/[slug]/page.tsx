@@ -8,6 +8,7 @@ import {
   getPlayerCareerAverages,
 } from "@/lib/stats";
 import { getDisplayAge, formatBirthDate, initials } from "@/lib/playerDisplay";
+import { PageContainer } from "@/components/PageContainer";
 
 const DEFAULT_HERO_COLOR = "#118a43";
 
@@ -104,11 +105,8 @@ export default async function PlayerDetailPage({
 
   return (
     <div className="-mt-8">
-      <div
-        className="rounded-b-xl px-6 py-8 text-white sm:px-10"
-        style={{ backgroundColor: heroColor }}
-      >
-        <div className="mx-auto flex max-w-5xl items-center gap-6">
+      <div className="px-4 py-8 text-white sm:px-10" style={{ backgroundColor: heroColor }}>
+        <div className="mx-auto flex max-w-6xl items-center gap-6">
           {currentEntry?.team.logoUrl && (
             <Image
               src={currentEntry.team.logoUrl}
@@ -143,7 +141,7 @@ export default async function PlayerDetailPage({
       </div>
 
       <div className="bg-black text-white">
-        <div className="mx-auto grid max-w-5xl grid-cols-3 gap-4 px-6 py-4 sm:px-10">
+        <div className="mx-auto grid max-w-6xl grid-cols-3 gap-4 px-4 py-4 sm:px-10">
           {[
             {
               l: "PTS/MATCH",
@@ -168,7 +166,7 @@ export default async function PlayerDetailPage({
           ))}
         </div>
         {infoItems.length > 0 && (
-          <div className="mx-auto flex max-w-5xl flex-wrap gap-x-8 gap-y-2 border-t border-white/10 px-6 py-3 text-xs sm:px-10">
+          <div className="mx-auto flex max-w-6xl flex-wrap gap-x-8 gap-y-2 border-t border-white/10 px-4 py-3 text-xs sm:px-10">
             {infoItems.map((item) => (
               <div key={item.label}>
                 <span className="text-white/50">{item.label}: </span>
@@ -179,8 +177,8 @@ export default async function PlayerDetailPage({
         )}
       </div>
 
-      <div className="mx-auto max-w-5xl px-6 py-8 sm:px-10">
-        <div className="flex flex-col gap-10">
+      <PageContainer>
+        <div className="flex flex-col gap-10 py-8">
           {player.bio && (
             <section>
               <h2 className="mb-3 text-lg font-semibold">Biographie</h2>
@@ -230,7 +228,7 @@ export default async function PlayerDetailPage({
             </section>
           )}
         </div>
-      </div>
+      </PageContainer>
     </div>
   );
 }

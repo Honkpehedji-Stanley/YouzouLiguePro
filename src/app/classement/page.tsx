@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getActiveSeason, getStandings, type StandingRow } from "@/lib/stats";
 import { CATEGORIES, CATEGORY_LABELS, CONFERENCES, CONFERENCE_LABELS } from "@/lib/league";
+import { PageContainer } from "@/components/PageContainer";
 
 function StandingsTable({ standings }: { standings: StandingRow[] }) {
   if (standings.length === 0) {
@@ -50,10 +51,15 @@ function StandingsTable({ standings }: { standings: StandingRow[] }) {
 export default async function StandingsPage() {
   const season = await getActiveSeason();
   if (!season) {
-    return <p>Aucune saison active pour le moment.</p>;
+    return (
+      <PageContainer>
+        <p>Aucune saison active pour le moment.</p>
+      </PageContainer>
+    );
   }
 
   return (
+    <PageContainer>
     <div>
       <h1 className="mb-1 text-2xl font-bold">Classement</h1>
       <p className="mb-8 text-black/60">{season.label}</p>
@@ -74,6 +80,7 @@ export default async function StandingsPage() {
         </section>
       ))}
     </div>
+    </PageContainer>
   );
 }
 

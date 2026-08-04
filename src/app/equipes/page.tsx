@@ -3,6 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getActiveSeason } from "@/lib/stats";
 import { CATEGORIES, CATEGORY_LABELS, CONFERENCES, CONFERENCE_LABELS } from "@/lib/league";
+import { PageContainer } from "@/components/PageContainer";
 
 export default async function TeamsPage() {
   const season = await getActiveSeason();
@@ -15,6 +16,7 @@ export default async function TeamsPage() {
     : [];
 
   return (
+    <PageContainer>
     <div>
       <h1 className="mb-1 text-2xl font-bold">Toutes les équipes</h1>
       {season && <p className="mb-8 text-black/60">{season.label}</p>}
@@ -86,5 +88,6 @@ export default async function TeamsPage() {
         </section>
       ))}
     </div>
+    </PageContainer>
   );
 }

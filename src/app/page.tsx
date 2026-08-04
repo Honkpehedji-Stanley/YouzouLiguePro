@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getActiveSeason, getStandings } from "@/lib/stats";
+import { PageContainer } from "@/components/PageContainer";
 
 function formatDateTime(date: Date) {
   return new Intl.DateTimeFormat("fr-FR", {
@@ -33,6 +34,7 @@ export default async function HomePage() {
   ]);
 
   return (
+    <PageContainer>
     <div className="flex flex-col gap-12">
       <section className="rounded-xl border border-black/10 bg-brand/5 p-8">
         <h1 className="text-3xl font-bold sm:text-4xl">
@@ -118,5 +120,6 @@ export default async function HomePage() {
         </section>
       </div>
     </div>
+    </PageContainer>
   );
 }

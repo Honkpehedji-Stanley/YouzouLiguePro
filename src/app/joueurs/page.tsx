@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getActiveSeason } from "@/lib/stats";
 import { getDisplayAge } from "@/lib/playerDisplay";
 import { PlayerRosterTable, type RosterRow } from "@/components/PlayerRosterTable";
+import { PageContainer } from "@/components/PageContainer";
 
 export default async function PlayersPage() {
   const season = await getActiveSeason();
@@ -37,10 +38,12 @@ export default async function PlayersPage() {
   });
 
   return (
-    <div>
-      <h1 className="mb-1 text-2xl font-bold">Joueurs</h1>
-      {season && <p className="mb-6 text-black/60">{season.label}</p>}
-      <PlayerRosterTable rows={rows} />
-    </div>
+    <PageContainer>
+      <div>
+        <h1 className="mb-1 text-2xl font-bold">Joueurs</h1>
+        {season && <p className="mb-6 text-black/60">{season.label}</p>}
+        <PlayerRosterTable rows={rows} />
+      </div>
+    </PageContainer>
   );
 }

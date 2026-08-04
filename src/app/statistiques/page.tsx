@@ -8,6 +8,7 @@ import {
   type LeaderRow,
 } from "@/lib/stats";
 import { CATEGORIES, CATEGORY_LABELS } from "@/lib/league";
+import { PageContainer } from "@/components/PageContainer";
 
 function LeaderBoard({
   metricLabel,
@@ -61,10 +62,15 @@ function LeaderBoard({
 export default async function StatsPage() {
   const season = await getActiveSeason();
   if (!season) {
-    return <p>Aucune saison active pour le moment.</p>;
+    return (
+      <PageContainer>
+        <p>Aucune saison active pour le moment.</p>
+      </PageContainer>
+    );
   }
 
   return (
+    <PageContainer>
     <div>
       <h1 className="mb-1 text-2xl font-bold">Statistiques</h1>
       <p className="mb-8 text-black/60">{season.label} · Moyennes par match</p>
@@ -87,6 +93,7 @@ export default async function StatsPage() {
         </section>
       ))}
     </div>
+    </PageContainer>
   );
 }
 

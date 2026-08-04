@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getActiveSeason } from "@/lib/stats";
+import { PageContainer } from "@/components/PageContainer";
 
 export default async function FreeAgentsPage() {
   const season = await getActiveSeason();
@@ -20,6 +21,7 @@ export default async function FreeAgentsPage() {
   });
 
   return (
+    <PageContainer>
     <div>
       <h1 className="mb-1 text-2xl font-bold">Agents libres</h1>
       <p className="mb-8 text-black/60">
@@ -55,5 +57,6 @@ export default async function FreeAgentsPage() {
         )}
       </ul>
     </div>
+    </PageContainer>
   );
 }

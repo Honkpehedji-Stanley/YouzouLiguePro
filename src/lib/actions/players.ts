@@ -109,3 +109,77 @@ export async function releasePlayerFromTeam(rosterEntryId: string, playerId: str
   revalidatePath(`/admin/players/${playerId}`);
   revalidatePath("/equipes");
 }
+
+const BULK_PLAYER_FIELDS = [
+  "heightCm",
+  "weightKg",
+  "birthDate",
+  "age",
+  "nationality",
+  "hometown",
+  "experienceYears",
+  "position",
+] as const;
+
+const BULK_ROSTER_FIELDS = ["jerseyNumber"] as const;
+
+export async function bulkUpdatePlayers(formData: FormData) {
+  const playerUpdates = new Map<string, Record<string, string>>();
+  const rosterUpdates = new Map<string, Record<string, string>>();
+
+  for (const [key, value] of formData.entries()) {
+    const match = key.match(/^(player|roster)__(.+)__(.+)$/);
+    if (!match) continue;
+    const [, scope, id, field] = match;
+    const raw = String(value).trim();
+
+    if (scope === "player" && (BULK_PLAYER_FIELDS as readonly string[]).includes(field)) {
+      if (!playerUpdates.has(id)) playerUpdates.set(id, {});
+      playerUpdates.get(id)![field] = raw;
+    }
+    if (scope === "roster" && (BULK_ROSTER_FIELDS as readonly string[]).includes(field)) {
+      if (!rosterUpdates.has(id)) rosterUpdates.set(id, {});
+      rosterUpdates.get(id)![field] = raw;
+    }
+  }
+
+  await prisma.$transaction([
+    ...Array.from(playerUpdates.entries()).map(([playerId, fields]) =>
+      prisma.player.update({
+        where: { id: playerId },
+        data: {
+          heightCm: fields.heightCm !== undefined ? (fields.heightCm ? Number(fields.heightCm) : null) : undefined,
+          weightKg: fields.weightKg !== undefined ? (fields.weightKg ? Number(fields.weightKg) : null) : undefined,
+          birthDate: fields.birthDate !== undefined ? (fields.birthDate ? new Date(fields.birthDate) : null) : undefined,
+          age: fields.age !== undefined ? (fields.age ? Number(fields.age) : null) : undefined,
+          nationality: fields.nationality !== undefined ? (fields.nationality || null) : undefined,
+          hometown: fields.hometown !== undefined ? (fields.hometown || null) : undefined,
+          experienceYears:
+            fields.experienceYears !== undefined
+              ? fields.experienceYears
+                ? Number(fields.experienceYears)
+                : null
+              : undefined,
+          position: fields.position !== undefined ? (fields.position ? (fields.position as Position) : null) : undefined,
+        },
+      })
+    ),
+    ...Array.from(rosterUpdates.entries()).map(([rosterEntryId, fields]) =>
+      prisma.teamPlayerSeason.update({
+        where: { id: rosterEntryId },
+        data: {
+          jerseyNumber:
+            fields.jerseyNumber !== undefined
+              ? fields.jerseyNumber
+                ? Number(fields.jerseyNumber)
+                : null
+              : undefined,
+        },
+      })
+    ),
+  ]);
+
+  revalidatePath("/admin/players");
+  revalidatePath("/admin/players/bulk");
+  revalidatePath("/joueurs");
+}
