@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { initials } from "@/lib/playerDisplay";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 
 export type RosterRow = {
   id: string;
@@ -15,6 +15,7 @@ export type RosterRow = {
   teamColor: string | null;
   jerseyNumber: number | null;
   position: string | null;
+  secondaryPosition: string | null;
   heightCm: number | null;
   weightKg: number | null;
   age: number | null;
@@ -70,9 +71,11 @@ export function PlayerRosterTable({ rows }: { rows: RosterRow[] }) {
                     href={`/joueurs/${row.slug}`}
                     className="flex items-center gap-2 font-semibold hover:text-brand hover:underline"
                   >
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/10 text-xs font-bold text-black/60">
-                      {initials(row.firstName, row.lastName)}
-                    </span>
+                    <PlayerAvatar
+                      photoUrl={row.photoUrl}
+                      name={`${row.firstName} ${row.lastName}`}
+                      size={32}
+                    />
                     {row.firstName} {row.lastName}
                   </Link>
                 </td>
@@ -90,7 +93,11 @@ export function PlayerRosterTable({ rows }: { rows: RosterRow[] }) {
                   )}
                 </td>
                 <td className="py-2 pr-3 text-right">{row.jerseyNumber ?? "—"}</td>
-                <td className="py-2 pr-3">{row.position ?? "—"}</td>
+                <td className="py-2 pr-3">
+                  {row.position
+                    ? `${row.position}${row.secondaryPosition ? `/${row.secondaryPosition}` : ""}`
+                    : "—"}
+                </td>
                 <td className="py-2 pr-3 text-right">
                   {row.heightCm ? `${row.heightCm} cm` : "—"}
                 </td>

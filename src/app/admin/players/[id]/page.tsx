@@ -116,18 +116,32 @@ export default async function AdminPlayerEditPage({
             placeholder="Années d'expérience"
             className="rounded-md border border-black/20 px-3 py-2"
           />
-          <select
-            name="position"
-            defaultValue={player.position ?? ""}
-            className="rounded-md border border-black/20 px-3 py-2"
-          >
-            <option value="">Poste (optionnel)</option>
-            {POSITIONS.map((pos) => (
-              <option key={pos} value={pos}>
-                {pos}
-              </option>
-            ))}
-          </select>
+          <div className="flex gap-3">
+            <select
+              name="position"
+              defaultValue={player.position ?? ""}
+              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
+            >
+              <option value="">Poste (optionnel)</option>
+              {POSITIONS.map((pos) => (
+                <option key={pos} value={pos}>
+                  {pos}
+                </option>
+              ))}
+            </select>
+            <select
+              name="secondaryPosition"
+              defaultValue={player.secondaryPosition ?? ""}
+              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
+            >
+              <option value="">Poste secondaire (optionnel)</option>
+              {POSITIONS.map((pos) => (
+                <option key={pos} value={pos}>
+                  {pos}
+                </option>
+              ))}
+            </select>
+          </div>
           <input
             name="photoUrl"
             defaultValue={player.photoUrl ?? ""}

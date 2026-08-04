@@ -2,48 +2,14 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import {
-  getActiveSeason,
-  getPlayerSeasonAverages,
-  getPlayerCareerAverages,
-} from "@/lib/stats";
-import { getDisplayAge, formatBirthDate, initials } from "@/lib/playerDisplay";
+import { getActiveSeason, getPlayerSeasonAverages } from "@/lib/stats";
+import { getDisplayAge, formatBirthDate } from "@/lib/playerDisplay";
 import { PageContainer } from "@/components/PageContainer";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
+import { PlayerTabs, type RecentGameRow } from "@/components/PlayerTabs";
+import type { GameStatRow } from "@/lib/statSplits";
 
 const DEFAULT_HERO_COLOR = "#118a43";
-
-function StatBlock({
-  label,
-  averages,
-}: {
-  label: string;
-  averages: Awaited<ReturnType<typeof getPlayerSeasonAverages>>;
-}) {
-  return (
-    <div>
-      <h2 className="mb-3 text-lg font-semibold">{label}</h2>
-      <div className="grid grid-cols-3 gap-4 sm:grid-cols-6">
-        {[
-          { l: "PTS", v: averages.points },
-          { l: "REB", v: averages.reboundsOff + averages.reboundsDef },
-          { l: "PD", v: averages.assists },
-          { l: "INT", v: averages.steals },
-          { l: "CT", v: averages.blocks },
-          { l: "BP", v: averages.turnovers },
-        ].map((stat) => (
-          <div key={stat.l} className="rounded-lg border border-black/10 p-3 text-center">
-            <p className="text-xl font-bold">{stat.v}</p>
-            <p className="text-xs text-black/60">{stat.l}/match</p>
-          </div>
-        ))}
-      </div>
-      <p className="mt-2 text-sm text-black/60">
-        {averages.gamesPlayed} match{averages.gamesPlayed > 1 ? "s" : ""} joué
-        {averages.gamesPlayed > 1 ? "s" : ""}
-      </p>
-    </div>
-  );
-}
 
 export default async function PlayerDetailPage({
   params,
@@ -67,9 +33,16 @@ export default async function PlayerDetailPage({
     ? player.rosterEntries.find((e) => e.seasonId === season.id && e.isActive)
     : undefined;
 
-  const [seasonAverages, careerAverages, teammates] = await Promise.all([
+  const [seasonAverages, allGameStats, teammates] = await Promise.all([
     season ? getPlayerSeasonAverages(player.id, season.id) : null,
-    getPlayerCareerAverages(player.id),
+    prisma.playerGameStat.findMany({
+      where: { playerId: player.id },
+      include: {
+        game: { include: { season: true, homeTeam: true, awayTeam: true } },
+        team: true,
+      },
+      orderBy: { game: { scheduledAt: "desc" } },
+    }),
     currentEntry
       ? prisma.teamPlayerSeason.findMany({
           where: {
@@ -86,8 +59,82 @@ export default async function PlayerDetailPage({
 
   const heroColor = currentEntry?.team.primaryColor ?? DEFAULT_HERO_COLOR;
   const age = getDisplayAge(player);
+  const position = player.position
+    ? `${player.position}${player.secondaryPosition ? `/${player.secondaryPosition}` : ""}`
+    : null;
 
-  const infoItems = [
+  const recentGames: RecentGameRow[] = allGameStats.slice(0, 5).map((stat) => {
+    const opponent = stat.teamId === stat.game.homeTeamId ? stat.game.awayTeam : stat.game.homeTeam;
+    const isHome = stat.teamId === stat.game.homeTeamId;
+    let result: RecentGameRow["result"] = null;
+    if (stat.game.status === "FINAL" && stat.game.homeScore != null && stat.game.awayScore != null) {
+      const ownScore = isHome ? stat.game.homeScore : stat.game.awayScore;
+      const oppScore = isHome ? stat.game.awayScore : stat.game.homeScore;
+      result = ownScore > oppScore ? "V" : "D";
+    }
+    return {
+      gameId: stat.gameId,
+      dateLabel: new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(stat.game.scheduledAt),
+      opponentName: opponent.name,
+      opponentSlug: opponent.slug,
+      isHome,
+      result,
+      minutes: stat.minutes,
+      points: stat.points,
+      rebounds: stat.reboundsOff + stat.reboundsDef,
+      assists: stat.assists,
+    };
+  });
+
+  const splitsRows: GameStatRow[] = allGameStats.map((stat) => ({
+    gameId: stat.gameId,
+    seasonId: stat.game.seasonId,
+    seasonLabel: stat.game.season.label,
+    phase: stat.game.phase,
+    teamName: stat.team.name,
+    minutes: stat.minutes,
+    points: stat.points,
+    fgMade: stat.fgMade,
+    fgAttempted: stat.fgAttempted,
+    threeMade: stat.threeMade,
+    threeAttempted: stat.threeAttempted,
+    ftMade: stat.ftMade,
+    ftAttempted: stat.ftAttempted,
+    reboundsOff: stat.reboundsOff,
+    reboundsDef: stat.reboundsDef,
+    assists: stat.assists,
+    turnovers: stat.turnovers,
+    steals: stat.steals,
+    blocks: stat.blocks,
+    fouls: stat.fouls,
+    didNotPlay: stat.didNotPlay,
+  }));
+
+  const fallbackSeasons = Array.from(
+    new Map(
+      player.rosterEntries.map((e) => [
+        e.seasonId,
+        { seasonId: e.seasonId, seasonLabel: e.season.label, teamName: e.team.name },
+      ])
+    ).values()
+  );
+
+  const cells = [
+    {
+      label: "PTS/MATCH",
+      value: seasonAverages && seasonAverages.gamesPlayed > 0 ? seasonAverages.points : null,
+    },
+    {
+      label: "REB/MATCH",
+      value:
+        seasonAverages && seasonAverages.gamesPlayed > 0
+          ? seasonAverages.reboundsOff + seasonAverages.reboundsDef
+          : null,
+    },
+    {
+      label: "PD/MATCH",
+      value: seasonAverages && seasonAverages.gamesPlayed > 0 ? seasonAverages.assists : null,
+    },
     { label: "Taille", value: player.heightCm ? `${player.heightCm} cm` : null },
     { label: "Poids", value: player.weightKg ? `${player.weightKg} kg` : null },
     { label: "Nationalité", value: player.nationality },
@@ -101,28 +148,38 @@ export default async function PlayerDetailPage({
           ? `${player.experienceYears} an${player.experienceYears > 1 ? "s" : ""}`
           : null,
     },
-  ].filter((item) => item.value);
+  ].filter((c) => c.value !== null && c.value !== undefined);
 
   return (
     <div className="-mt-8">
-      <div className="px-4 py-8 text-white sm:px-10" style={{ backgroundColor: heroColor }}>
-        <div className="mx-auto flex max-w-6xl items-center gap-6">
-          {currentEntry?.team.logoUrl && (
-            <Image
-              src={currentEntry.team.logoUrl}
-              alt={currentEntry.team.name}
-              width={56}
-              height={56}
-              className="rounded-md bg-white/10 object-cover"
-            />
-          )}
+      <div
+        className="relative overflow-hidden px-4 py-8 text-white sm:px-10"
+        style={{ backgroundColor: heroColor }}
+      >
+        {currentEntry?.team.logoUrl && (
+          <Image
+            src={currentEntry.team.logoUrl}
+            alt=""
+            aria-hidden
+            width={400}
+            height={400}
+            className="pointer-events-none absolute -right-10 top-1/2 h-[220%] w-auto -translate-y-1/2 object-contain opacity-15"
+          />
+        )}
+        <div className="relative mx-auto flex max-w-6xl items-center gap-6">
+          <PlayerAvatar
+            photoUrl={player.photoUrl}
+            name={`${player.firstName} ${player.lastName}`}
+            size={88}
+            className="ring-2 ring-white/30"
+          />
           <div>
             <p className="text-sm font-medium uppercase tracking-wide text-white/80">
               {currentEntry ? (
                 <>
                   {currentEntry.team.name}
                   {currentEntry.jerseyNumber != null && ` · #${currentEntry.jerseyNumber}`}
-                  {player.position && ` · ${player.position}`}
+                  {position && ` · ${position}`}
                 </>
               ) : (
                 "Agent libre"
@@ -140,71 +197,31 @@ export default async function PlayerDetailPage({
         </div>
       </div>
 
-      <div className="bg-black text-white">
-        <div className="mx-auto grid max-w-6xl grid-cols-3 gap-4 px-4 py-4 sm:px-10">
-          {[
-            {
-              l: "PTS/MATCH",
-              v: seasonAverages && seasonAverages.gamesPlayed > 0 ? seasonAverages.points : "—",
-            },
-            {
-              l: "REB/MATCH",
-              v:
-                seasonAverages && seasonAverages.gamesPlayed > 0
-                  ? seasonAverages.reboundsOff + seasonAverages.reboundsDef
-                  : "—",
-            },
-            {
-              l: "PD/MATCH",
-              v: seasonAverages && seasonAverages.gamesPlayed > 0 ? seasonAverages.assists : "—",
-            },
-          ].map((stat) => (
-            <div key={stat.l} className="text-center">
-              <p className="text-2xl font-bold">{stat.v}</p>
-              <p className="text-xs text-white/60">{stat.l}</p>
+      {cells.length > 0 && (
+        <div className="bg-black text-white">
+          <div className="mx-auto max-w-6xl px-4 py-4 sm:px-10">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4 lg:grid-cols-5">
+              {cells.map((cell) => (
+                <div key={cell.label}>
+                  <p className="text-[10px] font-medium uppercase tracking-wide text-white/50">
+                    {cell.label}
+                  </p>
+                  <p className="text-lg font-bold">{cell.value}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        {infoItems.length > 0 && (
-          <div className="mx-auto flex max-w-6xl flex-wrap gap-x-8 gap-y-2 border-t border-white/10 px-4 py-3 text-xs sm:px-10">
-            {infoItems.map((item) => (
-              <div key={item.label}>
-                <span className="text-white/50">{item.label}: </span>
-                <span className="font-semibold">{item.value}</span>
-              </div>
-            ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       <PageContainer>
         <div className="flex flex-col gap-10 py-8">
-          {player.bio && (
-            <section>
-              <h2 className="mb-3 text-lg font-semibold">Biographie</h2>
-              <p className="max-w-2xl text-black/80">{player.bio}</p>
-            </section>
-          )}
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold">Statistiques</h2>
-            <div className="flex flex-col gap-8">
-              {seasonAverages && seasonAverages.gamesPlayed > 0 && (
-                <StatBlock label={`Saison ${season?.label}`} averages={seasonAverages} />
-              )}
-              {careerAverages.gamesPlayed > 0 && (
-                <StatBlock label="Carrière" averages={careerAverages} />
-              )}
-              {careerAverages.gamesPlayed === 0 && (
-                <p className="text-black/60">Aucune statistique enregistrée pour l’instant.</p>
-              )}
-            </div>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold">Highlights</h2>
-            <p className="text-black/60">Aucun highlight disponible pour l’instant.</p>
-          </section>
+          <PlayerTabs
+            bio={player.bio}
+            recentGames={recentGames}
+            splitsRows={splitsRows}
+            fallbackSeasons={fallbackSeasons}
+          />
 
           {teammates.length > 0 && (
             <section>
@@ -216,9 +233,11 @@ export default async function PlayerDetailPage({
                     href={`/joueurs/${entry.player.slug}`}
                     className="flex items-center gap-2 rounded-md border border-black/10 px-3 py-2 hover:border-brand"
                   >
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/10 text-xs font-bold text-black/60">
-                      {initials(entry.player.firstName, entry.player.lastName)}
-                    </span>
+                    <PlayerAvatar
+                      photoUrl={entry.player.photoUrl}
+                      name={`${entry.player.firstName} ${entry.player.lastName}`}
+                      size={32}
+                    />
                     <span>
                       {entry.player.firstName} {entry.player.lastName}
                     </span>

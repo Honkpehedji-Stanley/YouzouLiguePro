@@ -58,22 +58,23 @@ model Team {
 }
 
 model Player {
-  id              String    @id @default(cuid())
-  slug            String    @unique
-  firstName       String
-  lastName        String
-  birthDate       DateTime?
-  age             Int? // secours si la date de naissance exacte est inconnue
-  heightCm        Int?
-  weightKg        Int?
-  nationality     String?
-  hometown        String?
-  experienceYears Int?
-  position        Position?
-  photoUrl        String?
-  bio             String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id                String    @id @default(cuid())
+  slug              String    @unique
+  firstName         String
+  lastName          String
+  birthDate         DateTime?
+  age               Int? // secours si la date de naissance exacte est inconnue
+  heightCm          Int?
+  weightKg          Int?
+  nationality       String?
+  hometown          String?
+  experienceYears   Int?
+  position          Position?
+  secondaryPosition Position?
+  photoUrl          String?
+  bio               String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   rosterEntries TeamPlayerSeason[]
   gameStats     PlayerGameStat[]
@@ -137,6 +138,7 @@ model Game {
   awayTeamId  String
   scheduledAt DateTime
   venue       String?
+  phase       String?
   status      GameStatus @default(SCHEDULED)
   homeScore   Int?
   awayScore   Int?

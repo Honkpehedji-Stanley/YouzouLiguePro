@@ -88,6 +88,21 @@ export default async function BulkPlayerEditPage() {
                         </select>
                       </label>
                       <label className="text-xs text-black/60">
+                        Poste secondaire
+                        <select
+                          name={`player__${player.id}__secondaryPosition`}
+                          defaultValue={player.secondaryPosition ?? ""}
+                          className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
+                        >
+                          <option value="">—</option>
+                          {POSITIONS.map((pos) => (
+                            <option key={pos} value={pos}>
+                              {pos}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="text-xs text-black/60">
                         Taille (cm)
                         <input
                           name={`player__${player.id}__heightCm`}

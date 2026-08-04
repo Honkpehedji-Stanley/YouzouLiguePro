@@ -119,6 +119,7 @@ const BULK_PLAYER_FIELDS = [
   "hometown",
   "experienceYears",
   "position",
+  "secondaryPosition",
 ] as const;
 
 const BULK_ROSTER_FIELDS = ["jerseyNumber"] as const;
@@ -161,6 +162,12 @@ export async function bulkUpdatePlayers(formData: FormData) {
                 : null
               : undefined,
           position: fields.position !== undefined ? (fields.position ? (fields.position as Position) : null) : undefined,
+          secondaryPosition:
+            fields.secondaryPosition !== undefined
+              ? fields.secondaryPosition
+                ? (fields.secondaryPosition as Position)
+                : null
+              : undefined,
         },
       })
     ),

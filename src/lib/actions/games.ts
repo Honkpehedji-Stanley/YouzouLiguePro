@@ -10,6 +10,7 @@ export async function createGame(formData: FormData) {
   const awayTeamId = String(formData.get("awayTeamId") ?? "");
   const scheduledAtRaw = String(formData.get("scheduledAt") ?? "");
   const venue = String(formData.get("venue") ?? "").trim() || null;
+  const phase = String(formData.get("phase") ?? "").trim() || null;
 
   if (!seasonId || !homeTeamId || !awayTeamId || !scheduledAtRaw) {
     throw new Error("Tous les champs (sauf le lieu) sont requis.");
@@ -25,6 +26,7 @@ export async function createGame(formData: FormData) {
       awayTeamId,
       scheduledAt: new Date(scheduledAtRaw),
       venue,
+      phase,
     },
   });
 

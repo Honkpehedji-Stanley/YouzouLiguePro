@@ -9,7 +9,3 @@ export function getDisplayAge(player: { birthDate: Date | null; age: number | nu
 export function formatBirthDate(date: Date) {
   return new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(date);
 }
-
-export function initials(firstName: string, lastName: string) {
-  return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-}

@@ -30,6 +30,7 @@ export default async function PlayersPage() {
       teamColor: entry?.team.primaryColor ?? null,
       jerseyNumber: entry?.jerseyNumber ?? null,
       position: player.position,
+      secondaryPosition: player.secondaryPosition,
       heightCm: player.heightCm,
       weightKg: player.weightKg,
       age: getDisplayAge(player),

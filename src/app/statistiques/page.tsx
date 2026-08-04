@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 import {
   getActiveSeason,
   getStatLeaders,
@@ -26,17 +26,11 @@ function LeaderBoard({
         {rows.map((row, index) => (
           <li key={row.player.id} className="flex items-center gap-3 py-2">
             <span className="w-4 text-sm font-semibold text-black/40">{index + 1}</span>
-            {row.player.photoUrl ? (
-              <Image
-                src={row.player.photoUrl}
-                alt={`${row.player.firstName} ${row.player.lastName}`}
-                width={32}
-                height={32}
-                className="rounded-full object-cover"
-              />
-            ) : (
-              <div className="h-8 w-8 rounded-full bg-black/10" />
-            )}
+            <PlayerAvatar
+              photoUrl={row.player.photoUrl}
+              name={`${row.player.firstName} ${row.player.lastName}`}
+              size={32}
+            />
             <div className="min-w-0 flex-1">
               <Link
                 href={`/joueurs/${row.player.slug}`}

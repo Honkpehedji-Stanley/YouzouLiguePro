@@ -49,8 +49,8 @@ export default async function AdminSchedulePage() {
                 </Link>
               </div>
               <p className="text-sm text-black/60">
-                {formatDateTime(game.scheduledAt)} · {game.season.label} ·{" "}
-                {STATUS_LABELS[game.status]}
+                {formatDateTime(game.scheduledAt)} · {game.season.label}
+                {game.phase && ` · ${game.phase}`} · {STATUS_LABELS[game.status]}
                 {game.status === "FINAL" &&
                   ` · ${game.homeScore} - ${game.awayScore}`}
               </p>
@@ -126,6 +126,18 @@ export default async function AdminSchedulePage() {
             placeholder="Lieu (optionnel)"
             className="rounded-md border border-black/20 px-3 py-2"
           />
+          <input
+            name="phase"
+            list="phase-options"
+            placeholder="Phase (optionnel : Phase 1, Final 4…)"
+            className="rounded-md border border-black/20 px-3 py-2"
+          />
+          <datalist id="phase-options">
+            <option value="Phase 1" />
+            <option value="Phase 2" />
+            <option value="Phase 3" />
+            <option value="Final 4" />
+          </datalist>
           <button
             type="submit"
             className="mt-2 rounded-md bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark"
