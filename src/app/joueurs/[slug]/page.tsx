@@ -153,7 +153,7 @@ export default async function PlayerDetailPage({
   return (
     <div className="-mt-8">
       <div
-        className="relative overflow-hidden px-4 py-8 text-white sm:px-10"
+        className="relative overflow-hidden px-4 pt-6 text-white sm:px-10"
         style={{ backgroundColor: heroColor }}
       >
         {currentEntry?.team.logoUrl && (
@@ -166,15 +166,14 @@ export default async function PlayerDetailPage({
             className="pointer-events-none absolute -right-10 top-1/2 h-[220%] w-auto -translate-y-1/2 object-contain opacity-15"
           />
         )}
-        <div className="relative mx-auto flex max-w-6xl items-center gap-6">
+        <div className="relative mx-auto flex max-w-6xl items-end gap-6">
           <PlayerAvatar
             photoUrl={player.photoUrl}
             name={`${player.firstName} ${player.lastName}`}
-            size={96}
+            size={140}
             variant="hero"
-            className="ring-2 ring-white/30"
           />
-          <div>
+          <div className="pb-6">
             <p className="text-sm font-medium uppercase tracking-wide text-white/80">
               {currentEntry ? (
                 <>

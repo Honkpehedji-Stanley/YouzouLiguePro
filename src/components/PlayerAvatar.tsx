@@ -13,6 +13,20 @@ export function PlayerAvatar({
   variant?: "list" | "hero";
   className?: string;
 }) {
+  if (variant === "hero") {
+    const src = photoUrl ?? "/player-placeholder.avif";
+    const ratio = photoUrl ? 4 / 3 : 760 / 1040;
+    return (
+      <Image
+        src={src}
+        alt={name}
+        width={size}
+        height={Math.round(size * ratio)}
+        className={`shrink-0 object-contain object-bottom ${className}`}
+      />
+    );
+  }
+
   const style = { width: size, height: size * (4 / 3) };
 
   if (photoUrl) {
@@ -23,18 +37,6 @@ export function PlayerAvatar({
         width={size}
         height={Math.round(size * (4 / 3))}
         className={`shrink-0 rounded-sm bg-black/10 object-cover object-top ${className}`}
-      />
-    );
-  }
-
-  if (variant === "hero") {
-    return (
-      <Image
-        src="/player-placeholder.avif"
-        alt={name}
-        width={size}
-        height={Math.round((size * 760) / 1040)}
-        className={`shrink-0 rounded-sm bg-black/5 object-contain ${className}`}
       />
     );
   }
