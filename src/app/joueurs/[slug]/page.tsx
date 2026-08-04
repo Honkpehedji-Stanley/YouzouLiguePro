@@ -148,7 +148,7 @@ export default async function PlayerDetailPage({
           ? `${player.experienceYears} an${player.experienceYears > 1 ? "s" : ""}`
           : null,
     },
-  ].filter((c) => c.value !== null && c.value !== undefined);
+  ];
 
   return (
     <div className="-mt-8">
@@ -170,7 +170,8 @@ export default async function PlayerDetailPage({
           <PlayerAvatar
             photoUrl={player.photoUrl}
             name={`${player.firstName} ${player.lastName}`}
-            size={88}
+            size={96}
+            variant="hero"
             className="ring-2 ring-white/30"
           />
           <div>
@@ -197,22 +198,20 @@ export default async function PlayerDetailPage({
         </div>
       </div>
 
-      {cells.length > 0 && (
-        <div className="bg-black text-white">
-          <div className="mx-auto max-w-6xl px-4 py-4 sm:px-10">
-            <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4 lg:grid-cols-5">
-              {cells.map((cell) => (
-                <div key={cell.label}>
-                  <p className="text-[10px] font-medium uppercase tracking-wide text-white/50">
-                    {cell.label}
-                  </p>
-                  <p className="text-lg font-bold">{cell.value}</p>
-                </div>
-              ))}
-            </div>
+      <div className="bg-black text-white">
+        <div className="mx-auto max-w-6xl px-4 py-4 sm:px-10">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4 lg:grid-cols-5">
+            {cells.map((cell) => (
+              <div key={cell.label}>
+                <p className="text-[10px] font-medium uppercase tracking-wide text-white/50">
+                  {cell.label}
+                </p>
+                <p className="text-lg font-bold">{cell.value ?? "—"}</p>
+              </div>
+            ))}
           </div>
         </div>
-      )}
+      </div>
 
       <PageContainer>
         <div className="flex flex-col gap-10 py-8">
