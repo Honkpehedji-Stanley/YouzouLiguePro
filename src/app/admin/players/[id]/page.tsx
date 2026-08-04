@@ -36,6 +36,9 @@ export default async function AdminPlayerEditPage({
   const deletePlayerWithId = deletePlayer.bind(null, player.id);
   const assignPlayerWithId = assignPlayerToTeam.bind(null, player.id);
   const activeSeason = seasons.find((s) => s.isActive) ?? seasons[0];
+  const currentEntry = player.rosterEntries.find(
+    (entry) => entry.seasonId === activeSeason?.id && entry.isActive
+  );
   const birthDateValue = player.birthDate
     ? player.birthDate.toISOString().slice(0, 10)
     : "";
@@ -69,13 +72,50 @@ export default async function AdminPlayerEditPage({
               className="w-1/2 rounded-md border border-black/20 px-3 py-2"
             />
             <input
+              name="age"
+              type="number"
+              defaultValue={player.age ?? ""}
+              placeholder="Âge (si date inconnue)"
+              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
+            />
+          </div>
+          <div className="flex gap-3">
+            <input
               name="heightCm"
               type="number"
               defaultValue={player.heightCm ?? ""}
               placeholder="Taille (cm)"
               className="w-1/2 rounded-md border border-black/20 px-3 py-2"
             />
+            <input
+              name="weightKg"
+              type="number"
+              defaultValue={player.weightKg ?? ""}
+              placeholder="Poids (kg)"
+              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
+            />
           </div>
+          <div className="flex gap-3">
+            <input
+              name="nationality"
+              defaultValue={player.nationality ?? ""}
+              placeholder="Nationalité"
+              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
+            />
+            <input
+              name="hometown"
+              defaultValue={player.hometown ?? ""}
+              placeholder="Ville natale"
+              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
+            />
+          </div>
+          <input
+            name="experienceYears"
+            type="number"
+            defaultValue={player.experienceYears ?? ""}
+            placeholder="Années d'expérience"
+            className="rounded-md border border-black/20 px-3 py-2"
+          />
           <select
             name="position"
             defaultValue={player.position ?? ""}
@@ -120,6 +160,7 @@ export default async function AdminPlayerEditPage({
           <select
             name="teamId"
             required
+            defaultValue={currentEntry?.teamId}
             className="rounded-md border border-black/20 px-3 py-2"
           >
             <option value="">Équipe</option>
@@ -150,11 +191,12 @@ export default async function AdminPlayerEditPage({
           <input
             name="jerseyNumber"
             type="number"
+            defaultValue={currentEntry?.jerseyNumber ?? ""}
             placeholder="N°"
             className="w-20 rounded-md border border-black/20 px-3 py-2"
           />
           <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" name="isCaptain" />
+            <input type="checkbox" name="isCaptain" defaultChecked={currentEntry?.isCaptain} />
             Capitaine
           </label>
           <button

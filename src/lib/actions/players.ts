@@ -10,7 +10,12 @@ function readPlayerFields(formData: FormData) {
   const firstName = String(formData.get("firstName") ?? "").trim();
   const lastName = String(formData.get("lastName") ?? "").trim();
   const birthDateRaw = String(formData.get("birthDate") ?? "").trim();
+  const ageRaw = String(formData.get("age") ?? "").trim();
   const heightCmRaw = String(formData.get("heightCm") ?? "").trim();
+  const weightKgRaw = String(formData.get("weightKg") ?? "").trim();
+  const nationality = String(formData.get("nationality") ?? "").trim() || null;
+  const hometown = String(formData.get("hometown") ?? "").trim() || null;
+  const experienceYearsRaw = String(formData.get("experienceYears") ?? "").trim();
   const positionRaw = String(formData.get("position") ?? "").trim();
   const photoUrl = String(formData.get("photoUrl") ?? "").trim() || null;
   const bio = String(formData.get("bio") ?? "").trim() || null;
@@ -23,7 +28,12 @@ function readPlayerFields(formData: FormData) {
     firstName,
     lastName,
     birthDate: birthDateRaw ? new Date(birthDateRaw) : null,
+    age: ageRaw ? Number(ageRaw) : null,
     heightCm: heightCmRaw ? Number(heightCmRaw) : null,
+    weightKg: weightKgRaw ? Number(weightKgRaw) : null,
+    nationality,
+    hometown,
+    experienceYears: experienceYearsRaw ? Number(experienceYearsRaw) : null,
     position: positionRaw ? (positionRaw as Position) : null,
     photoUrl,
     bio,
