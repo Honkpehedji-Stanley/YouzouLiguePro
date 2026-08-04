@@ -63,6 +63,7 @@ export async function assignPlayerToTeam(playerId: string, formData: FormData) {
   const teamId = String(formData.get("teamId") ?? "");
   const seasonId = String(formData.get("seasonId") ?? "");
   const jerseyNumberRaw = String(formData.get("jerseyNumber") ?? "").trim();
+  const isCaptain = formData.get("isCaptain") === "on";
   if (!teamId || !seasonId) {
     throw new Error("Équipe et saison sont requises.");
   }
@@ -76,9 +77,11 @@ export async function assignPlayerToTeam(playerId: string, formData: FormData) {
       teamId,
       seasonId,
       jerseyNumber: jerseyNumberRaw ? Number(jerseyNumberRaw) : null,
+      isCaptain,
     },
     update: {
       jerseyNumber: jerseyNumberRaw ? Number(jerseyNumberRaw) : null,
+      isCaptain,
       isActive: true,
       leftAt: null,
     },

@@ -111,6 +111,7 @@ model TeamPlayerSeason {
   teamId       String
   seasonId     String
   jerseyNumber Int?
+  isCaptain    Boolean   @default(false)
   isActive     Boolean   @default(true)
   joinedAt     DateTime  @default(now())
   leftAt       DateTime?

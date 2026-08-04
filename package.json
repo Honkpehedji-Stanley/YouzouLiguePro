@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "db:seed": "tsx prisma/seed.ts",
-    "db:seed:teams": "tsx prisma/seedTeams.ts"
+    "db:seed:teams": "tsx prisma/seedTeams.ts",
+    "db:seed:players": "tsx prisma/seedPlayers.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

@@ -6,6 +6,7 @@ import {
   assignPlayerToTeam,
   releasePlayerFromTeam,
 } from "@/lib/actions/players";
+import { CATEGORIES, CATEGORY_LABELS } from "@/lib/league";
 
 const POSITIONS = ["PG", "SG", "SF", "PF", "C"] as const;
 
@@ -25,7 +26,7 @@ export default async function AdminPlayerEditPage({
         },
       },
     }),
-    prisma.team.findMany({ orderBy: { name: "asc" } }),
+    prisma.team.findMany({ orderBy: [{ category: "asc" }, { name: "asc" }] }),
     prisma.season.findMany({ orderBy: { startDate: "desc" } }),
   ]);
 
@@ -122,10 +123,16 @@ export default async function AdminPlayerEditPage({
             className="rounded-md border border-black/20 px-3 py-2"
           >
             <option value="">Équipe</option>
-            {teams.map((team) => (
-              <option key={team.id} value={team.id}>
-                {team.name}
-              </option>
+            {CATEGORIES.map((category) => (
+              <optgroup key={category} label={CATEGORY_LABELS[category]}>
+                {teams
+                  .filter((team) => team.category === category)
+                  .map((team) => (
+                    <option key={team.id} value={team.id}>
+                      {team.name}
+                    </option>
+                  ))}
+              </optgroup>
             ))}
           </select>
           <select
@@ -146,6 +153,10 @@ export default async function AdminPlayerEditPage({
             placeholder="N°"
             className="w-20 rounded-md border border-black/20 px-3 py-2"
           />
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" name="isCaptain" />
+            Capitaine
+          </label>
           <button
             type="submit"
             className="rounded-md bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark"
@@ -169,6 +180,7 @@ export default async function AdminPlayerEditPage({
                 <span>
                   {entry.team.name} — {entry.season.label}
                   {entry.jerseyNumber != null && ` (#${entry.jerseyNumber})`}
+                  {entry.isCaptain && " · Capitaine"}
                   {!entry.isActive && " · inactif"}
                 </span>
                 {entry.isActive && (

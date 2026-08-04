@@ -97,6 +97,9 @@ export default async function TeamDetailPage({
               >
                 <span>
                   {entry.player.firstName} {entry.player.lastName}
+                  {entry.isCaptain && (
+                    <span className="ml-1 text-xs font-semibold text-brand">(C)</span>
+                  )}
                 </span>
                 <span className="text-sm text-black/60">
                   {entry.jerseyNumber != null && `#${entry.jerseyNumber}`}{" "}
