@@ -41,7 +41,7 @@ const PLAYERS: PlayerSeed[] = [
   // ASPAC BBC
   { firstName: "Fadil", lastName: "Alassane", teamSlug: "aspac-bbc" },
   { firstName: "Fadil", lastName: "Baré", teamSlug: "aspac-bbc" },
-  { firstName: "Abdoul", lastName: "Tamba", teamSlug: "aspac-bbc" },
+  { firstName: "Abdul-Haady", lastName: "Tamba Seko", teamSlug: "aspac-bbc" },
   { firstName: "Roland L'Heureux", lastName: "Adjado", teamSlug: "aspac-bbc" },
   { firstName: "Edmond", lastName: "Behanzin", teamSlug: "aspac-bbc" },
   { firstName: "Adébayo", lastName: "Alabodé", teamSlug: "aspac-bbc" },
@@ -85,6 +85,9 @@ const PLAYERS: PlayerSeed[] = [
   { firstName: "Aldiouma", lastName: "Keita", teamSlug: "renaissance-bbc" },
   { firstName: "Kenneth", lastName: "Agossou", teamSlug: "renaissance-bbc" },
   { firstName: "Eugène M'baapakê", lastName: "M'Po", teamSlug: "renaissance-bbc" },
+  { firstName: "Djéglé", lastName: "Charles", teamSlug: "renaissance-bbc" },
+  { firstName: "Nourou Dine", lastName: "Inoua", teamSlug: "renaissance-bbc" },
+  { firstName: "Annide", lastName: "Hounsa", teamSlug: "renaissance-bbc" },
 ];
 
 async function uniquePlayerSlug(firstName: string, lastName: string) {
