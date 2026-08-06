@@ -68,6 +68,7 @@ model Player {
   heightCm          Int?
   weightKg          Int?
   nationality       String?
+  nationality2      String?
   hometown          String?
   experienceYears   Int?
   position          Position?

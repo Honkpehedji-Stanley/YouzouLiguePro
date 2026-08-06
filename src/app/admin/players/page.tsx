@@ -1,107 +1,80 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { createPlayer } from "@/lib/actions/players";
-
-const POSITIONS = ["PG", "SG", "SF", "PF", "C"] as const;
+import { getActiveSeason } from "@/lib/stats";
+import { primaryButtonClass } from "@/components/admin/formStyles";
 
 export default async function AdminPlayersPage() {
+  const season = await getActiveSeason();
+
   const players = await prisma.player.findMany({
     orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
+    include: {
+      rosterEntries: {
+        where: { seasonId: season?.id ?? "__no-active-season__", isActive: true },
+        include: { team: true },
+      },
+    },
   });
 
   return (
-    <div className="grid gap-8 md:grid-cols-2">
-      <div>
-        <h1 className="mb-4 text-xl font-bold">Joueurs</h1>
-        <ul className="divide-y divide-black/10">
-          {players.map((player) => (
-            <li key={player.id} className="flex items-center justify-between py-3">
-              <div>
-                <p className="font-medium">
-                  {player.firstName} {player.lastName}
-                </p>
-                {player.position && (
-                  <p className="text-sm text-black/60">
-                    {player.position}
-                  </p>
-                )}
-              </div>
-              <Link
-                href={`/admin/players/${player.id}`}
-                className="text-sm text-brand underline"
-              >
-                Modifier
-              </Link>
-            </li>
-          ))}
-          {players.length === 0 && (
-            <p className="py-3 text-sm text-black/60">
-              Aucun joueur pour l’instant.
-            </p>
-          )}
-        </ul>
+    <div>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Joueurs</h1>
+          <p className="mt-1 text-sm text-slate-500">{players.length} joueurs enregistrés.</p>
+        </div>
+        <Link href="/admin/players/new" className={primaryButtonClass}>
+          + Nouveau joueur
+        </Link>
       </div>
 
-      <div>
-        <h2 className="mb-4 text-lg font-semibold">Ajouter un joueur</h2>
-        <form action={createPlayer} className="flex flex-col gap-3">
-          <div className="flex gap-3">
-            <input
-              name="firstName"
-              placeholder="Prénom"
-              required
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
-            />
-            <input
-              name="lastName"
-              placeholder="Nom"
-              required
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
-            />
-          </div>
-          <div className="flex gap-3">
-            <input
-              name="birthDate"
-              type="date"
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
-            />
-            <input
-              name="heightCm"
-              type="number"
-              placeholder="Taille (cm)"
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
-            />
-          </div>
-          <select
-            name="position"
-            defaultValue=""
-            className="rounded-md border border-black/20 px-3 py-2"
-          >
-            <option value="">Poste (optionnel)</option>
-            {POSITIONS.map((pos) => (
-              <option key={pos} value={pos}>
-                {pos}
-              </option>
-            ))}
-          </select>
-          <input
-            name="photoUrl"
-            placeholder="URL de la photo (optionnel)"
-            className="rounded-md border border-black/20 px-3 py-2"
-          />
-          <textarea
-            name="bio"
-            placeholder="Bio (optionnel)"
-            rows={3}
-            className="rounded-md border border-black/20 px-3 py-2"
-          />
-          <button
-            type="submit"
-            className="mt-2 rounded-md bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark"
-          >
-            Créer
-          </button>
-        </form>
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <th className="px-5 py-3">Joueur</th>
+              <th className="px-5 py-3">Équipe</th>
+              <th className="px-5 py-3">N°</th>
+              <th className="px-5 py-3">Poste</th>
+              <th className="px-5 py-3">Nationalité</th>
+              <th className="px-5 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {players.map((player) => {
+              const entry = player.rosterEntries[0];
+              return (
+                <tr key={player.id} className="hover:bg-slate-50">
+                  <td className="px-5 py-3 font-medium text-slate-800">
+                    {player.firstName} {player.lastName}
+                    {entry?.isCaptain && <span className="ml-1.5 text-xs font-semibold text-brand">(C)</span>}
+                  </td>
+                  <td className="px-5 py-3 text-slate-600">
+                    {entry ? entry.team.name : <span className="text-slate-400">Agent libre</span>}
+                  </td>
+                  <td className="px-5 py-3 text-slate-600">{entry?.jerseyNumber ?? "—"}</td>
+                  <td className="px-5 py-3 text-slate-600">
+                    {player.position ?? "—"}
+                    {player.secondaryPosition && ` / ${player.secondaryPosition}`}
+                  </td>
+                  <td className="px-5 py-3 text-slate-600">{player.nationality ?? "—"}</td>
+                  <td className="px-5 py-3 text-right">
+                    <Link href={`/admin/players/${player.id}`} className="text-sm font-medium text-brand hover:underline">
+                      Modifier
+                    </Link>
+                  </td>
+                </tr>
+              );
+            })}
+            {players.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-5 py-6 text-center text-sm text-slate-400">
+                  Aucun joueur pour l&apos;instant.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );

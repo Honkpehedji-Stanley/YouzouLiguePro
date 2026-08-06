@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { createGame } from "@/lib/actions/games";
 import { CATEGORIES, CATEGORY_LABELS } from "@/lib/league";
+import { cardClass, inputClass, labelClass, primaryButtonClass, selectClass, sectionTitleClass } from "@/components/admin/formStyles";
 
 function formatDateTime(date: Date) {
   return new Intl.DateTimeFormat("fr-FR", {
@@ -18,6 +19,14 @@ const STATUS_LABELS: Record<string, string> = {
   CANCELLED: "Annulé",
 };
 
+const STATUS_STYLES: Record<string, string> = {
+  SCHEDULED: "bg-slate-100 text-slate-600",
+  LIVE: "bg-red-100 text-red-600",
+  FINAL: "bg-emerald-100 text-emerald-700",
+  POSTPONED: "bg-amber-100 text-amber-700",
+  CANCELLED: "bg-slate-100 text-slate-400",
+};
+
 export default async function AdminSchedulePage() {
   const [games, teams, seasons] = await Promise.all([
     prisma.game.findMany({
@@ -31,117 +40,126 @@ export default async function AdminSchedulePage() {
   const activeSeason = seasons.find((s) => s.isActive) ?? seasons[0];
 
   return (
-    <div className="grid gap-8 md:grid-cols-2">
+    <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
       <div>
-        <h1 className="mb-4 text-xl font-bold">Calendrier</h1>
-        <ul className="divide-y divide-black/10">
-          {games.map((game) => (
-            <li key={game.id} className="py-3">
-              <div className="flex items-center justify-between">
-                <p className="font-medium">
-                  {game.homeTeam.name} vs {game.awayTeam.name}
+        <h1 className="mb-4 text-2xl font-bold">Calendrier</h1>
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <ul className="divide-y divide-slate-100">
+            {games.map((game) => (
+              <li key={game.id} className="px-5 py-3 hover:bg-slate-50">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="font-medium text-slate-800">
+                    {game.homeTeam.name} vs {game.awayTeam.name}
+                  </p>
+                  <Link href={`/admin/games/${game.id}/entry`} className="shrink-0 text-sm font-medium text-brand hover:underline">
+                    Saisir le match
+                  </Link>
+                </div>
+                <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-500">
+                  <span>{formatDateTime(game.scheduledAt)} · {game.season.label}</span>
+                  {game.phase && <span>· {game.phase}</span>}
+                  <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${STATUS_STYLES[game.status]}`}>
+                    {STATUS_LABELS[game.status]}
+                  </span>
+                  {game.status === "FINAL" && (
+                    <span className="font-semibold text-slate-700">
+                      {game.homeScore} - {game.awayScore}
+                    </span>
+                  )}
                 </p>
-                <Link
-                  href={`/admin/games/${game.id}/entry`}
-                  className="text-sm text-brand underline"
-                >
-                  Saisir le match
-                </Link>
-              </div>
-              <p className="text-sm text-black/60">
-                {formatDateTime(game.scheduledAt)} · {game.season.label}
-                {game.phase && ` · ${game.phase}`} · {STATUS_LABELS[game.status]}
-                {game.status === "FINAL" &&
-                  ` · ${game.homeScore} - ${game.awayScore}`}
-              </p>
-            </li>
-          ))}
-          {games.length === 0 && (
-            <p className="py-3 text-sm text-black/60">
-              Aucun match programmé.
-            </p>
-          )}
-        </ul>
+              </li>
+            ))}
+            {games.length === 0 && (
+              <li className="px-5 py-6 text-center text-sm text-slate-400">Aucun match programmé.</li>
+            )}
+          </ul>
+        </div>
       </div>
 
-      <div>
-        <h2 className="mb-4 text-lg font-semibold">Programmer un match</h2>
+      <div className={cardClass}>
+        <h2 className={sectionTitleClass}>Programmer un match</h2>
         <form action={createGame} className="flex flex-col gap-3">
-          <select
-            name="seasonId"
-            required
-            defaultValue={activeSeason?.id}
-            className="rounded-md border border-black/20 px-3 py-2"
-          >
-            {seasons.map((season) => (
-              <option key={season.id} value={season.id}>
-                {season.label}
-              </option>
-            ))}
-          </select>
-          <select
-            name="homeTeamId"
-            required
-            className="rounded-md border border-black/20 px-3 py-2"
-          >
-            <option value="">Équipe à domicile</option>
-            {CATEGORIES.map((category) => (
-              <optgroup key={category} label={CATEGORY_LABELS[category]}>
-                {teams
-                  .filter((team) => team.category === category)
-                  .map((team) => (
-                    <option key={team.id} value={team.id}>
-                      {team.name}
-                    </option>
-                  ))}
-              </optgroup>
-            ))}
-          </select>
-          <select
-            name="awayTeamId"
-            required
-            className="rounded-md border border-black/20 px-3 py-2"
-          >
-            <option value="">Équipe à l’extérieur</option>
-            {CATEGORIES.map((category) => (
-              <optgroup key={category} label={CATEGORY_LABELS[category]}>
-                {teams
-                  .filter((team) => team.category === category)
-                  .map((team) => (
-                    <option key={team.id} value={team.id}>
-                      {team.name}
-                    </option>
-                  ))}
-              </optgroup>
-            ))}
-          </select>
-          <input
-            name="scheduledAt"
-            type="datetime-local"
-            required
-            className="rounded-md border border-black/20 px-3 py-2"
-          />
-          <input
-            name="venue"
-            placeholder="Lieu (optionnel)"
-            className="rounded-md border border-black/20 px-3 py-2"
-          />
-          <input
-            name="phase"
-            list="phase-options"
-            placeholder="Phase (optionnel : Phase 1, Final 4…)"
-            className="rounded-md border border-black/20 px-3 py-2"
-          />
-          <datalist id="phase-options">
-            <option value="Phase 1" />
-            <option value="Phase 2" />
-            <option value="Phase 3" />
-            <option value="Final 4" />
-          </datalist>
-          <button
-            type="submit"
-            className="mt-2 rounded-md bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark"
-          >
+          <div>
+            <label className={labelClass} htmlFor="seasonId">
+              Saison
+            </label>
+            <select id="seasonId" name="seasonId" required defaultValue={activeSeason?.id} className={selectClass}>
+              {seasons.map((season) => (
+                <option key={season.id} value={season.id}>
+                  {season.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="homeTeamId">
+              Équipe à domicile
+            </label>
+            <select id="homeTeamId" name="homeTeamId" required defaultValue="" className={selectClass}>
+              <option value="">Équipe à domicile</option>
+              {CATEGORIES.map((category) => (
+                <optgroup key={category} label={CATEGORY_LABELS[category]}>
+                  {teams
+                    .filter((team) => team.category === category)
+                    .map((team) => (
+                      <option key={team.id} value={team.id}>
+                        {team.name}
+                      </option>
+                    ))}
+                </optgroup>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="awayTeamId">
+              Équipe à l&apos;extérieur
+            </label>
+            <select id="awayTeamId" name="awayTeamId" required defaultValue="" className={selectClass}>
+              <option value="">Équipe à l&apos;extérieur</option>
+              {CATEGORIES.map((category) => (
+                <optgroup key={category} label={CATEGORY_LABELS[category]}>
+                  {teams
+                    .filter((team) => team.category === category)
+                    .map((team) => (
+                      <option key={team.id} value={team.id}>
+                        {team.name}
+                      </option>
+                    ))}
+                </optgroup>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="scheduledAt">
+              Date et heure
+            </label>
+            <input id="scheduledAt" name="scheduledAt" type="datetime-local" required className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="venue">
+              Lieu
+            </label>
+            <input id="venue" name="venue" placeholder="Optionnel" className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="phase">
+              Phase
+            </label>
+            <input
+              id="phase"
+              name="phase"
+              list="phase-options"
+              placeholder="Optionnel : Phase 1, Final 4…"
+              className={inputClass}
+            />
+            <datalist id="phase-options">
+              <option value="Phase 1" />
+              <option value="Phase 2" />
+              <option value="Phase 3" />
+              <option value="Final 4" />
+            </datalist>
+          </div>
+          <button type="submit" className={`${primaryButtonClass} mt-1`}>
             Programmer
           </button>
         </form>

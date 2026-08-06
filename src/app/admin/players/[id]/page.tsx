@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import {
@@ -6,7 +7,18 @@ import {
   assignPlayerToTeam,
   releasePlayerFromTeam,
 } from "@/lib/actions/players";
-import { CATEGORIES, CATEGORY_LABELS } from "@/lib/league";
+import { AgeBirthDateFields } from "@/components/admin/AgeBirthDateFields";
+import { NationalityAndHometownFields } from "@/components/admin/NationalityFields";
+import { TeamAssignmentFields } from "@/components/admin/TeamAssignmentFields";
+import {
+  cardClass,
+  dangerLinkClass,
+  inputClass,
+  labelClass,
+  primaryButtonClass,
+  selectClass,
+  sectionTitleClass,
+} from "@/components/admin/formStyles";
 
 const POSITIONS = ["PG", "SG", "SF", "PF", "C"] as const;
 
@@ -44,217 +56,195 @@ export default async function AdminPlayerEditPage({
     : "";
 
   return (
-    <div className="grid gap-10 md:grid-cols-2">
-      <div>
-        <h1 className="mb-4 text-xl font-bold">
-          Modifier {player.firstName} {player.lastName}
-        </h1>
-        <form action={updatePlayerWithId} className="flex flex-col gap-3">
-          <div className="flex gap-3">
-            <input
-              name="firstName"
-              defaultValue={player.firstName}
-              required
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
+    <div className="mx-auto max-w-3xl">
+      <Link href="/admin/players" className="text-sm text-slate-400 hover:text-brand">
+        ← Joueurs
+      </Link>
+      <h1 className="mt-1 mb-6 text-2xl font-bold">
+        {player.firstName} {player.lastName}
+      </h1>
+
+      <div className="flex flex-col gap-6">
+        <form id="player-edit-form" action={updatePlayerWithId} className="flex flex-col gap-6">
+          <section className={cardClass}>
+            <h2 className={sectionTitleClass}>Identité</h2>
+            <div className="flex flex-col gap-3">
+              <div className="flex gap-3">
+                <div className="w-1/2">
+                  <label className={labelClass} htmlFor="firstName">
+                    Prénom(s)
+                  </label>
+                  <input id="firstName" name="firstName" defaultValue={player.firstName} required className={inputClass} />
+                </div>
+                <div className="w-1/2">
+                  <label className={labelClass} htmlFor="lastName">
+                    Nom
+                  </label>
+                  <input id="lastName" name="lastName" defaultValue={player.lastName} required className={inputClass} />
+                </div>
+              </div>
+              <div>
+                <label className={labelClass} htmlFor="photoUrl">
+                  URL de la photo
+                </label>
+                <input id="photoUrl" name="photoUrl" defaultValue={player.photoUrl ?? ""} className={inputClass} />
+              </div>
+            </div>
+          </section>
+
+          <section className={cardClass}>
+            <h2 className={sectionTitleClass}>Profil physique</h2>
+            <div className="flex flex-col gap-3">
+              <AgeBirthDateFields defaultBirthDate={birthDateValue} defaultAge={player.age} />
+              <div className="flex gap-3">
+                <div className="w-1/2">
+                  <label className={labelClass} htmlFor="heightCm">
+                    Taille (cm)
+                  </label>
+                  <input
+                    id="heightCm"
+                    name="heightCm"
+                    type="number"
+                    min={120}
+                    max={230}
+                    defaultValue={player.heightCm ?? ""}
+                    className={inputClass}
+                  />
+                </div>
+                <div className="w-1/2">
+                  <label className={labelClass} htmlFor="weightKg">
+                    Poids (kg)
+                  </label>
+                  <input
+                    id="weightKg"
+                    name="weightKg"
+                    type="number"
+                    min={30}
+                    max={200}
+                    defaultValue={player.weightKg ?? ""}
+                    className={inputClass}
+                  />
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <div className="w-1/2">
+                  <label className={labelClass} htmlFor="position">
+                    Poste principal
+                  </label>
+                  <select id="position" name="position" defaultValue={player.position ?? ""} className={selectClass}>
+                    <option value="">—</option>
+                    {POSITIONS.map((pos) => (
+                      <option key={pos} value={pos}>
+                        {pos}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="w-1/2">
+                  <label className={labelClass} htmlFor="secondaryPosition">
+                    Poste secondaire
+                  </label>
+                  <select
+                    id="secondaryPosition"
+                    name="secondaryPosition"
+                    defaultValue={player.secondaryPosition ?? ""}
+                    className={selectClass}
+                  >
+                    <option value="">—</option>
+                    {POSITIONS.map((pos) => (
+                      <option key={pos} value={pos}>
+                        {pos}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className={labelClass} htmlFor="experienceYears">
+                  Années d&apos;expérience
+                </label>
+                <input
+                  id="experienceYears"
+                  name="experienceYears"
+                  type="number"
+                  min={0}
+                  max={30}
+                  defaultValue={player.experienceYears ?? ""}
+                  className={`${inputClass} w-1/2`}
+                />
+              </div>
+            </div>
+          </section>
+
+          <section className={cardClass}>
+            <h2 className={sectionTitleClass}>Origine</h2>
+            <NationalityAndHometownFields
+              defaultNationality={player.nationality ?? ""}
+              defaultNationality2={player.nationality2 ?? ""}
+              defaultHometown={player.hometown ?? ""}
             />
-            <input
-              name="lastName"
-              defaultValue={player.lastName}
-              required
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
-            />
-          </div>
-          <div className="flex gap-3">
-            <input
-              name="birthDate"
-              type="date"
-              defaultValue={birthDateValue}
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
-            />
-            <input
-              name="age"
-              type="number"
-              defaultValue={player.age ?? ""}
-              placeholder="Âge (si date inconnue)"
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
-            />
-          </div>
-          <div className="flex gap-3">
-            <input
-              name="heightCm"
-              type="number"
-              defaultValue={player.heightCm ?? ""}
-              placeholder="Taille (cm)"
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
-            />
-            <input
-              name="weightKg"
-              type="number"
-              defaultValue={player.weightKg ?? ""}
-              placeholder="Poids (kg)"
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
-            />
-          </div>
-          <div className="flex gap-3">
-            <input
-              name="nationality"
-              defaultValue={player.nationality ?? ""}
-              placeholder="Nationalité"
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
-            />
-            <input
-              name="hometown"
-              defaultValue={player.hometown ?? ""}
-              placeholder="Ville natale"
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
-            />
-          </div>
-          <input
-            name="experienceYears"
-            type="number"
-            defaultValue={player.experienceYears ?? ""}
-            placeholder="Années d'expérience"
-            className="rounded-md border border-black/20 px-3 py-2"
-          />
-          <div className="flex gap-3">
-            <select
-              name="position"
-              defaultValue={player.position ?? ""}
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
-            >
-              <option value="">Poste (optionnel)</option>
-              {POSITIONS.map((pos) => (
-                <option key={pos} value={pos}>
-                  {pos}
-                </option>
-              ))}
-            </select>
-            <select
-              name="secondaryPosition"
-              defaultValue={player.secondaryPosition ?? ""}
-              className="w-1/2 rounded-md border border-black/20 px-3 py-2"
-            >
-              <option value="">Poste secondaire (optionnel)</option>
-              {POSITIONS.map((pos) => (
-                <option key={pos} value={pos}>
-                  {pos}
-                </option>
-              ))}
-            </select>
-          </div>
-          <input
-            name="photoUrl"
-            defaultValue={player.photoUrl ?? ""}
-            placeholder="URL de la photo"
-            className="rounded-md border border-black/20 px-3 py-2"
-          />
-          <textarea
-            name="bio"
-            defaultValue={player.bio ?? ""}
-            rows={3}
-            className="rounded-md border border-black/20 px-3 py-2"
-          />
-          <button
-            type="submit"
-            className="mt-2 rounded-md bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark"
-          >
+          </section>
+
+          <section className={cardClass}>
+            <h2 className={sectionTitleClass}>Présentation</h2>
+            <textarea name="bio" rows={4} defaultValue={player.bio ?? ""} className={inputClass} />
+          </section>
+        </form>
+
+        <div className="flex items-center justify-between">
+          <form action={deletePlayerWithId}>
+            <button type="submit" className={dangerLinkClass}>
+              Supprimer ce joueur
+            </button>
+          </form>
+          <button type="submit" form="player-edit-form" className={primaryButtonClass}>
             Enregistrer
           </button>
-        </form>
-        <form action={deletePlayerWithId} className="mt-6">
-          <button type="submit" className="text-sm text-red-600 underline">
-            Supprimer ce joueur
-          </button>
-        </form>
-      </div>
+        </div>
 
-      <div>
-        <h2 className="mb-4 text-lg font-semibold">Affectation à une équipe</h2>
-        <form action={assignPlayerWithId} className="mb-6 flex flex-wrap gap-3">
-          <select
-            name="teamId"
-            required
-            defaultValue={currentEntry?.teamId}
-            className="rounded-md border border-black/20 px-3 py-2"
-          >
-            <option value="">Équipe</option>
-            {CATEGORIES.map((category) => (
-              <optgroup key={category} label={CATEGORY_LABELS[category]}>
-                {teams
-                  .filter((team) => team.category === category)
-                  .map((team) => (
-                    <option key={team.id} value={team.id}>
-                      {team.name}
-                    </option>
-                  ))}
-              </optgroup>
-            ))}
-          </select>
-          <select
-            name="seasonId"
-            required
-            defaultValue={activeSeason?.id}
-            className="rounded-md border border-black/20 px-3 py-2"
-          >
-            {seasons.map((season) => (
-              <option key={season.id} value={season.id}>
-                {season.label}
-              </option>
-            ))}
-          </select>
-          <input
-            name="jerseyNumber"
-            type="number"
-            defaultValue={currentEntry?.jerseyNumber ?? ""}
-            placeholder="N°"
-            className="w-20 rounded-md border border-black/20 px-3 py-2"
-          />
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" name="isCaptain" defaultChecked={currentEntry?.isCaptain} />
-            Capitaine
-          </label>
-          <button
-            type="submit"
-            className="rounded-md bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark"
-          >
-            Affecter
-          </button>
-        </form>
+        <section className={cardClass}>
+          <h2 className={sectionTitleClass}>Affectation à une équipe</h2>
+          <form action={assignPlayerWithId} className="flex flex-col gap-4">
+            <TeamAssignmentFields
+              teams={teams}
+              seasons={seasons}
+              defaultTeamId={currentEntry?.teamId}
+              defaultSeasonId={activeSeason?.id}
+              defaultJerseyNumber={currentEntry?.jerseyNumber ?? undefined}
+              defaultIsCaptain={currentEntry?.isCaptain}
+            />
+            <button type="submit" className={`${primaryButtonClass} self-start`}>
+              Affecter
+            </button>
+          </form>
 
-        <h3 className="mb-2 text-sm font-semibold text-black/60">
-          Historique
-        </h3>
-        <ul className="divide-y divide-black/10">
-          {player.rosterEntries.map((entry) => {
-            const releaseWithIds = releasePlayerFromTeam.bind(
-              null,
-              entry.id,
-              player.id
-            );
-            return (
-              <li key={entry.id} className="flex items-center justify-between py-2 text-sm">
-                <span>
-                  {entry.team.name} — {entry.season.label}
-                  {entry.jerseyNumber != null && ` (#${entry.jerseyNumber})`}
-                  {entry.isCaptain && " · Capitaine"}
-                  {!entry.isActive && " · inactif"}
-                </span>
-                {entry.isActive && (
-                  <form action={releaseWithIds}>
-                    <button type="submit" className="text-red-600 underline">
-                      Libérer
-                    </button>
-                  </form>
-                )}
-              </li>
-            );
-          })}
-          {player.rosterEntries.length === 0 && (
-            <p className="py-2 text-sm text-black/60">
-              Aucune affectation pour l’instant.
-            </p>
-          )}
-        </ul>
+          <h3 className="mt-6 mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Historique</h3>
+          <ul className="divide-y divide-slate-100">
+            {player.rosterEntries.map((entry) => {
+              const releaseWithIds = releasePlayerFromTeam.bind(null, entry.id, player.id);
+              return (
+                <li key={entry.id} className="flex items-center justify-between py-2 text-sm text-slate-600">
+                  <span>
+                    {entry.team.name} — {entry.season.label}
+                    {entry.jerseyNumber != null && ` (#${entry.jerseyNumber})`}
+                    {entry.isCaptain && " · Capitaine"}
+                    {!entry.isActive && " · inactif"}
+                  </span>
+                  {entry.isActive && (
+                    <form action={releaseWithIds}>
+                      <button type="submit" className={dangerLinkClass}>
+                        Libérer
+                      </button>
+                    </form>
+                  )}
+                </li>
+              );
+            })}
+            {player.rosterEntries.length === 0 && (
+              <p className="py-2 text-sm text-slate-400">Aucune affectation pour l&apos;instant.</p>
+            )}
+          </ul>
+        </section>
       </div>
     </div>
   );

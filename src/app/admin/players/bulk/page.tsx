@@ -1,8 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { getActiveSeason } from "@/lib/stats";
 import { bulkUpdatePlayers } from "@/lib/actions/players";
+import { NATIONALITIES } from "@/lib/geo";
+import { primaryButtonClass } from "@/components/admin/formStyles";
 
 const POSITIONS = ["PG", "SG", "SF", "PF", "C"] as const;
+const fieldInputClass =
+  "mt-1 w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20";
 
 export default async function BulkPlayerEditPage() {
   const season = await getActiveSeason();
@@ -38,10 +42,16 @@ export default async function BulkPlayerEditPage() {
         {season && ` Saison : ${season.label}.`}
       </p>
 
+      <datalist id="nationality-options">
+        {NATIONALITIES.map((n) => (
+          <option key={n.value} value={n.value} />
+        ))}
+      </datalist>
+
       <form action={bulkUpdatePlayers} className="flex flex-col gap-10">
         <button
           type="submit"
-          className="self-start rounded-md bg-brand px-5 py-2 font-semibold text-white hover:bg-brand-dark"
+          className={`${primaryButtonClass} self-start`}
         >
           Enregistrer tout
         </button>
@@ -68,7 +78,7 @@ export default async function BulkPlayerEditPage() {
                             name={`roster__${entry.id}__jerseyNumber`}
                             type="number"
                             defaultValue={entry.jerseyNumber ?? ""}
-                            className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
+                            className={fieldInputClass}
                           />
                         </label>
                       )}
@@ -77,7 +87,7 @@ export default async function BulkPlayerEditPage() {
                         <select
                           name={`player__${player.id}__position`}
                           defaultValue={player.position ?? ""}
-                          className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
+                          className={fieldInputClass}
                         >
                           <option value="">—</option>
                           {POSITIONS.map((pos) => (
@@ -92,7 +102,7 @@ export default async function BulkPlayerEditPage() {
                         <select
                           name={`player__${player.id}__secondaryPosition`}
                           defaultValue={player.secondaryPosition ?? ""}
-                          className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
+                          className={fieldInputClass}
                         >
                           <option value="">—</option>
                           {POSITIONS.map((pos) => (
@@ -108,7 +118,7 @@ export default async function BulkPlayerEditPage() {
                           name={`player__${player.id}__heightCm`}
                           type="number"
                           defaultValue={player.heightCm ?? ""}
-                          className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
+                          className={fieldInputClass}
                         />
                       </label>
                       <label className="text-xs text-black/60">
@@ -117,7 +127,7 @@ export default async function BulkPlayerEditPage() {
                           name={`player__${player.id}__weightKg`}
                           type="number"
                           defaultValue={player.weightKg ?? ""}
-                          className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
+                          className={fieldInputClass}
                         />
                       </label>
                       <label className="text-xs text-black/60">
@@ -126,7 +136,7 @@ export default async function BulkPlayerEditPage() {
                           name={`player__${player.id}__birthDate`}
                           type="date"
                           defaultValue={birthDateValue(player.birthDate)}
-                          className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
+                          className={fieldInputClass}
                         />
                       </label>
                       <label className="text-xs text-black/60">
@@ -135,7 +145,7 @@ export default async function BulkPlayerEditPage() {
                           name={`player__${player.id}__age`}
                           type="number"
                           defaultValue={player.age ?? ""}
-                          className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
+                          className={fieldInputClass}
                         />
                       </label>
                       <label className="text-xs text-black/60">
@@ -143,7 +153,8 @@ export default async function BulkPlayerEditPage() {
                         <input
                           name={`player__${player.id}__nationality`}
                           defaultValue={player.nationality ?? ""}
-                          className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
+                          list="nationality-options"
+                          className={fieldInputClass}
                         />
                       </label>
                       <label className="text-xs text-black/60">
@@ -151,7 +162,7 @@ export default async function BulkPlayerEditPage() {
                         <input
                           name={`player__${player.id}__hometown`}
                           defaultValue={player.hometown ?? ""}
-                          className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
+                          className={fieldInputClass}
                         />
                       </label>
                       <label className="text-xs text-black/60">
@@ -160,7 +171,7 @@ export default async function BulkPlayerEditPage() {
                           name={`player__${player.id}__experienceYears`}
                           type="number"
                           defaultValue={player.experienceYears ?? ""}
-                          className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
+                          className={fieldInputClass}
                         />
                       </label>
                     </div>
@@ -173,7 +184,7 @@ export default async function BulkPlayerEditPage() {
 
         <button
           type="submit"
-          className="self-start rounded-md bg-brand px-5 py-2 font-semibold text-white hover:bg-brand-dark"
+          className={`${primaryButtonClass} self-start`}
         >
           Enregistrer tout
         </button>

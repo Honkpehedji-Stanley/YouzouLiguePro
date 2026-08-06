@@ -14,9 +14,11 @@ function readPlayerFields(formData: FormData) {
   const heightCmRaw = String(formData.get("heightCm") ?? "").trim();
   const weightKgRaw = String(formData.get("weightKg") ?? "").trim();
   const nationality = String(formData.get("nationality") ?? "").trim() || null;
+  const nationality2 = String(formData.get("nationality2") ?? "").trim() || null;
   const hometown = String(formData.get("hometown") ?? "").trim() || null;
   const experienceYearsRaw = String(formData.get("experienceYears") ?? "").trim();
   const positionRaw = String(formData.get("position") ?? "").trim();
+  const secondaryPositionRaw = String(formData.get("secondaryPosition") ?? "").trim();
   const photoUrl = String(formData.get("photoUrl") ?? "").trim() || null;
   const bio = String(formData.get("bio") ?? "").trim() || null;
 
@@ -32,9 +34,11 @@ function readPlayerFields(formData: FormData) {
     heightCm: heightCmRaw ? Number(heightCmRaw) : null,
     weightKg: weightKgRaw ? Number(weightKgRaw) : null,
     nationality,
+    nationality2,
     hometown,
     experienceYears: experienceYearsRaw ? Number(experienceYearsRaw) : null,
     position: positionRaw ? (positionRaw as Position) : null,
+    secondaryPosition: secondaryPositionRaw ? (secondaryPositionRaw as Position) : null,
     photoUrl,
     bio,
   };
@@ -50,9 +54,28 @@ export async function createPlayer(formData: FormData) {
     slug = `${slugBase}-${suffix}`;
   }
 
-  await prisma.player.create({ data: { ...fields, slug } });
+  const player = await prisma.player.create({ data: { ...fields, slug } });
+
+  const teamId = String(formData.get("teamId") ?? "").trim();
+  const seasonId = String(formData.get("seasonId") ?? "").trim();
+  if (teamId && seasonId) {
+    const jerseyNumberRaw = String(formData.get("jerseyNumber") ?? "").trim();
+    await prisma.teamPlayerSeason.create({
+      data: {
+        playerId: player.id,
+        teamId,
+        seasonId,
+        jerseyNumber: jerseyNumberRaw ? Number(jerseyNumberRaw) : null,
+        isCaptain: formData.get("isCaptain") === "on",
+      },
+    });
+  }
+
   revalidatePath("/admin/players");
+  revalidatePath("/admin");
   revalidatePath("/joueurs");
+  revalidatePath("/agents-libres");
+  redirect("/admin/players");
 }
 
 export async function updatePlayer(playerId: string, formData: FormData) {
@@ -74,8 +97,20 @@ export async function assignPlayerToTeam(playerId: string, formData: FormData) {
   const seasonId = String(formData.get("seasonId") ?? "");
   const jerseyNumberRaw = String(formData.get("jerseyNumber") ?? "").trim();
   const isCaptain = formData.get("isCaptain") === "on";
-  if (!teamId || !seasonId) {
-    throw new Error("Équipe et saison sont requises.");
+
+  if (!teamId) {
+    // "Agent libre" choisi : on libère le joueur de son équipe active pour cette saison.
+    await prisma.teamPlayerSeason.updateMany({
+      where: { playerId, seasonId: seasonId || undefined, isActive: true },
+      data: { isActive: false, leftAt: new Date() },
+    });
+    revalidatePath(`/admin/players/${playerId}`);
+    revalidatePath("/equipes");
+    revalidatePath("/agents-libres");
+    return;
+  }
+  if (!seasonId) {
+    throw new Error("La saison est requise.");
   }
 
   await prisma.teamPlayerSeason.upsert({
