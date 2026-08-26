@@ -12,11 +12,13 @@ function readTeamFields(formData: FormData) {
   const city = String(formData.get("city") ?? "").trim() || null;
   const shortName = String(formData.get("shortName") ?? "").trim() || null;
   const logoUrl = String(formData.get("logoUrl") ?? "").trim() || null;
+  const instagramUrl = String(formData.get("instagramUrl") ?? "").trim() || null;
+  const facebookUrl = String(formData.get("facebookUrl") ?? "").trim() || null;
   if (!name) throw new Error("Le nom de l'équipe est requis.");
   if (categoryRaw !== "HOMMES" && categoryRaw !== "DAMES") {
     throw new Error("La catégorie (Hommes/Dames) est requise.");
   }
-  return { name, category: categoryRaw as Category, city, shortName, logoUrl };
+  return { name, category: categoryRaw as Category, city, shortName, logoUrl, instagramUrl, facebookUrl };
 }
 
 async function uniqueTeamSlug(name: string, category: Category, excludeId?: string) {

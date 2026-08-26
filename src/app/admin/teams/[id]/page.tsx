@@ -91,6 +91,32 @@ export default async function AdminTeamEditPage({
                 </label>
                 <input id="logoUrl" name="logoUrl" defaultValue={team.logoUrl ?? ""} className={inputClass} />
               </div>
+              <div className="flex gap-3">
+                <div className="w-1/2">
+                  <label className={labelClass} htmlFor="instagramUrl">
+                    Instagram
+                  </label>
+                  <input
+                    id="instagramUrl"
+                    name="instagramUrl"
+                    defaultValue={team.instagramUrl ?? ""}
+                    placeholder="https://instagram.com/..."
+                    className={inputClass}
+                  />
+                </div>
+                <div className="w-1/2">
+                  <label className={labelClass} htmlFor="facebookUrl">
+                    Facebook
+                  </label>
+                  <input
+                    id="facebookUrl"
+                    name="facebookUrl"
+                    defaultValue={team.facebookUrl ?? ""}
+                    placeholder="https://facebook.com/..."
+                    className={inputClass}
+                  />
+                </div>
+              </div>
             </div>
           </section>
         </form>
