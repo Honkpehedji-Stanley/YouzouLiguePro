@@ -11,6 +11,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:teams": "tsx prisma/seedTeams.ts",
     "db:seed:players": "tsx prisma/seedPlayers.ts",
+    "db:seed:staff": "tsx prisma/seedStaff.ts",
     "db:seed:extras": "tsx prisma/seedExtras.ts"
   },
   "prisma": {

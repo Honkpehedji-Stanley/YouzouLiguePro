@@ -56,6 +56,7 @@ model Team {
   homeGames     Game[]             @relation("HomeTeam")
   awayGames     Game[]             @relation("AwayTeam")
   gameStats     PlayerGameStat[]
+  staff         StaffMember[]
 }
 
 model Player {
@@ -92,6 +93,24 @@ model Season {
   rosterEntries TeamPlayerSeason[]
   teamSeasons   TeamSeason[]
   games         Game[]
+  staff         StaffMember[]
+}
+
+// Membre du staff d'une équipe (entraîneur, adjoint, manager...) pour une saison donnée.
+model StaffMember {
+  id        String   @id @default(cuid())
+  teamId    String
+  seasonId  String
+  firstName String
+  lastName  String
+  role      String? // ex: "Entraîneur", "Assistant", "Manager"
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  season Season @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@index([teamId, seasonId])
 }
 
 // Affectation d'une équipe à une conférence pour une saison donnée.

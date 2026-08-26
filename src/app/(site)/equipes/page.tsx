@@ -59,14 +59,14 @@ export default async function TeamsPage() {
                           </Link>
                           <div className="mt-0.5 flex gap-2 text-xs text-black/50">
                             <Link
-                              href={`/equipes/${team.slug}#effectif`}
+                              href={`/equipes/${team.slug}?onglet=effectif`}
                               className="hover:text-brand hover:underline"
                             >
                               Effectif
                             </Link>
                             <span>·</span>
                             <Link
-                              href={`/equipes/${team.slug}#calendrier`}
+                              href={`/equipes/${team.slug}?onglet=calendrier`}
                               className="hover:text-brand hover:underline"
                             >
                               Calendrier

@@ -88,6 +88,21 @@ const PLAYERS: PlayerSeed[] = [
   { firstName: "Djéglé", lastName: "Charles", teamSlug: "renaissance-bbc" },
   { firstName: "Nourou Dine", lastName: "Inoua", teamSlug: "renaissance-bbc" },
   { firstName: "Annide", lastName: "Hounsa", teamSlug: "renaissance-bbc" },
+
+  // Avrankou Omnisports BBC
+  { firstName: "Mahdih", lastName: "Baboni", teamSlug: "avrankou-omnisports" },
+  { firstName: "Rhudis", lastName: "Ganmondeyi", teamSlug: "avrankou-omnisports" },
+  { firstName: "Dé-Gracias", lastName: "Hounsinou", teamSlug: "avrankou-omnisports" },
+  { firstName: "Ben", lastName: "Ibrahim", teamSlug: "avrankou-omnisports" },
+  { firstName: "Marius", lastName: "Saizonou", teamSlug: "avrankou-omnisports" },
+  { firstName: "Lilas", lastName: "Zossou", teamSlug: "avrankou-omnisports" },
+  { firstName: "Rafiou", lastName: "Makirimi", teamSlug: "avrankou-omnisports" },
+  { firstName: "Préféré", lastName: "Lantokpode", teamSlug: "avrankou-omnisports" },
+  { firstName: "Judicaël", lastName: "Agossou", teamSlug: "avrankou-omnisports" },
+  { firstName: "Math", lastName: "Adaimon", teamSlug: "avrankou-omnisports" },
+  { firstName: "Christopher", lastName: "Umeh", teamSlug: "avrankou-omnisports" },
+  { firstName: "Richmonde", lastName: "Zounnon", teamSlug: "avrankou-omnisports" },
+  { firstName: "Ryjkard", lastName: "Adikin", teamSlug: "avrankou-omnisports" },
 ];
 
 async function uniquePlayerSlug(firstName: string, lastName: string) {

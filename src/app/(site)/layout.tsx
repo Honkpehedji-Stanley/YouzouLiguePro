@@ -1,8 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
+import { prisma } from "@/lib/prisma";
+import { getActiveSeason } from "@/lib/stats";
+import { TeamsNavMenu, type NavTeam } from "@/components/TeamsNavMenu";
 
 const NAV_LINKS = [
-  { href: "/equipes", label: "Équipes" },
   { href: "/joueurs", label: "Joueurs" },
   { href: "/calendrier", label: "Calendrier" },
   { href: "/statistiques", label: "Statistiques" },
@@ -10,11 +12,30 @@ const NAV_LINKS = [
   { href: "/agents-libres", label: "Agents libres" },
 ];
 
-export default function SiteLayout({
+async function getNavTeams(): Promise<NavTeam[]> {
+  const season = await getActiveSeason();
+  const teams = await prisma.team.findMany({ orderBy: [{ category: "asc" }, { name: "asc" }] });
+  const teamSeasons = season
+    ? await prisma.teamSeason.findMany({ where: { seasonId: season.id } })
+    : [];
+  const conferenceByTeamId = new Map(teamSeasons.map((ts) => [ts.teamId, ts.conference]));
+
+  return teams.map((team) => ({
+    slug: team.slug,
+    name: team.name,
+    logoUrl: team.logoUrl,
+    category: team.category,
+    conference: conferenceByTeamId.get(team.id) ?? null,
+  }));
+}
+
+export default async function SiteLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const navTeams = await getNavTeams();
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="border-b border-black/10">
@@ -31,7 +52,8 @@ export default function SiteLayout({
               <span className="text-brand">Youzou</span> Ligue Pro
             </span>
           </Link>
-          <nav className="flex flex-wrap justify-end gap-x-5 gap-y-1 text-sm font-medium">
+          <nav className="flex flex-wrap items-center justify-end gap-x-5 gap-y-1 text-sm font-medium">
+            <TeamsNavMenu teams={navTeams} />
             {NAV_LINKS.map((link) => (
               <Link key={link.href} href={link.href} className="hover:text-brand">
                 {link.label}
