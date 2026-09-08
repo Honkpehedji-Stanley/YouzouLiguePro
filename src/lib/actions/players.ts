@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { Position } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
+import { requireAdmin } from "@/lib/authz";
 
 function readPlayerFields(formData: FormData) {
   const firstName = String(formData.get("firstName") ?? "").trim();
@@ -45,6 +46,7 @@ function readPlayerFields(formData: FormData) {
 }
 
 export async function createPlayer(formData: FormData) {
+  await requireAdmin();
   const fields = readPlayerFields(formData);
   const slugBase = slugify(`${fields.firstName}-${fields.lastName}`);
   let slug = slugBase;
@@ -79,6 +81,7 @@ export async function createPlayer(formData: FormData) {
 }
 
 export async function updatePlayer(playerId: string, formData: FormData) {
+  await requireAdmin();
   const fields = readPlayerFields(formData);
   await prisma.player.update({ where: { id: playerId }, data: fields });
   revalidatePath("/admin/players");
@@ -87,12 +90,14 @@ export async function updatePlayer(playerId: string, formData: FormData) {
 }
 
 export async function deletePlayer(playerId: string) {
+  await requireAdmin();
   await prisma.player.delete({ where: { id: playerId } });
   revalidatePath("/admin/players");
   redirect("/admin/players");
 }
 
 export async function assignPlayerToTeam(playerId: string, formData: FormData) {
+  await requireAdmin();
   const teamId = String(formData.get("teamId") ?? "");
   const seasonId = String(formData.get("seasonId") ?? "");
   const jerseyNumberRaw = String(formData.get("jerseyNumber") ?? "").trim();
@@ -137,6 +142,7 @@ export async function assignPlayerToTeam(playerId: string, formData: FormData) {
 }
 
 export async function releasePlayerFromTeam(rosterEntryId: string, playerId: string) {
+  await requireAdmin();
   await prisma.teamPlayerSeason.update({
     where: { id: rosterEntryId },
     data: { isActive: false, leftAt: new Date() },
@@ -160,6 +166,7 @@ const BULK_PLAYER_FIELDS = [
 const BULK_ROSTER_FIELDS = ["jerseyNumber"] as const;
 
 export async function bulkUpdatePlayers(formData: FormData) {
+  await requireAdmin();
   const playerUpdates = new Map<string, Record<string, string>>();
   const rosterUpdates = new Map<string, Record<string, string>>();
 

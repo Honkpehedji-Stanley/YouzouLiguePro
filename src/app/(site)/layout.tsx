@@ -3,6 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getActiveSeason } from "@/lib/stats";
 import { TeamsNavMenu, type NavTeam } from "@/components/TeamsNavMenu";
+import { SiteFooter } from "@/components/SiteFooter";
 
 const NAV_LINKS = [
   { href: "/joueurs", label: "Joueurs" },
@@ -63,9 +64,7 @@ export default async function SiteLayout({
         </div>
       </header>
       <main className="flex-1 py-8">{children}</main>
-      <footer className="border-t border-black/10 px-4 py-6 text-center text-sm text-black/60">
-        Youzou Ligue Pro — Le basketball professionnel béninois.
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

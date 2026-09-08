@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/authz";
 
 const STAT_FIELDS = [
   "minutes",
@@ -45,6 +46,7 @@ function parsePlayerStats(formData: FormData) {
 }
 
 async function upsertStats(gameId: string, formData: FormData) {
+  await requireAdmin();
   const game = await prisma.game.findUniqueOrThrow({ where: { id: gameId } });
 
   const rosterEntries = await prisma.teamPlayerSeason.findMany({

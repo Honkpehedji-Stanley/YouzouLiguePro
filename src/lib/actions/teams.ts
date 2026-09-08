@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { Category, Conference } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
+import { requireAdmin } from "@/lib/authz";
 
 function readTeamFields(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
@@ -38,6 +39,7 @@ async function uniqueTeamSlug(name: string, category: Category, excludeId?: stri
 }
 
 export async function createTeam(formData: FormData) {
+  await requireAdmin();
   const fields = readTeamFields(formData);
   const slug = await uniqueTeamSlug(fields.name, fields.category);
   await prisma.team.create({ data: { ...fields, slug } });
@@ -46,6 +48,7 @@ export async function createTeam(formData: FormData) {
 }
 
 export async function updateTeam(teamId: string, formData: FormData) {
+  await requireAdmin();
   const fields = readTeamFields(formData);
   const slug = await uniqueTeamSlug(fields.name, fields.category, teamId);
   await prisma.team.update({
@@ -58,12 +61,14 @@ export async function updateTeam(teamId: string, formData: FormData) {
 }
 
 export async function deleteTeam(teamId: string) {
+  await requireAdmin();
   await prisma.team.delete({ where: { id: teamId } });
   revalidatePath("/admin/teams");
   redirect("/admin/teams");
 }
 
 export async function assignTeamToConference(teamId: string, formData: FormData) {
+  await requireAdmin();
   const seasonId = String(formData.get("seasonId") ?? "");
   const conferenceRaw = String(formData.get("conference") ?? "");
   if (!seasonId || (conferenceRaw !== "SUD" && conferenceRaw !== "NORD")) {
@@ -83,6 +88,7 @@ export async function assignTeamToConference(teamId: string, formData: FormData)
 }
 
 export async function removeTeamFromSeason(teamSeasonId: string, teamId: string) {
+  await requireAdmin();
   await prisma.teamSeason.delete({ where: { id: teamSeasonId } });
   revalidatePath(`/admin/teams/${teamId}`);
   revalidatePath("/equipes");

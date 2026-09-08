@@ -3,8 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/authz";
 
 export async function createGame(formData: FormData) {
+  await requireAdmin();
   const seasonId = String(formData.get("seasonId") ?? "");
   const homeTeamId = String(formData.get("homeTeamId") ?? "");
   const awayTeamId = String(formData.get("awayTeamId") ?? "");
@@ -35,6 +37,7 @@ export async function createGame(formData: FormData) {
 }
 
 export async function deleteGame(gameId: string) {
+  await requireAdmin();
   await prisma.game.delete({ where: { id: gameId } });
   revalidatePath("/admin/schedule");
   revalidatePath("/calendrier");
