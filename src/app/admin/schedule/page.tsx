@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { createGame } from "@/lib/actions/games";
-import { CATEGORIES, CATEGORY_LABELS } from "@/lib/league";
+import { createGame, deleteGame } from "@/lib/actions/games";
 import { cardClass, inputClass, labelClass, primaryButtonClass, selectClass, sectionTitleClass } from "@/components/admin/formStyles";
+import { SubmitButton } from "@/components/admin/SubmitButton";
+import { ConfirmSubmitButton } from "@/components/admin/ConfirmSubmitButton";
+import { GameTeamSelects } from "@/components/admin/GameTeamSelects";
 
 function formatDateTime(date: Date) {
   return new Intl.DateTimeFormat("fr-FR", {
@@ -45,30 +47,44 @@ export default async function AdminSchedulePage() {
         <h1 className="mb-4 text-2xl font-bold">Calendrier</h1>
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
           <ul className="divide-y divide-slate-100">
-            {games.map((game) => (
-              <li key={game.id} className="px-5 py-3 hover:bg-slate-50">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="font-medium text-slate-800">
-                    {game.homeTeam.name} vs {game.awayTeam.name}
-                  </p>
-                  <Link href={`/admin/games/${game.id}/entry`} className="shrink-0 text-sm font-medium text-brand hover:underline">
-                    Saisir le match
-                  </Link>
-                </div>
-                <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-500">
-                  <span>{formatDateTime(game.scheduledAt)} · {game.season.label}</span>
-                  {game.phase && <span>· {game.phase}</span>}
-                  <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${STATUS_STYLES[game.status]}`}>
-                    {STATUS_LABELS[game.status]}
-                  </span>
-                  {game.status === "FINAL" && (
-                    <span className="font-semibold text-slate-700">
-                      {game.homeScore} - {game.awayScore}
+            {games.map((game) => {
+              const deleteGameWithId = deleteGame.bind(null, game.id);
+              return (
+                <li key={game.id} className="px-5 py-3 hover:bg-slate-50">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="font-medium text-slate-800">
+                      {game.homeTeam.name} vs {game.awayTeam.name}
+                    </p>
+                    <div className="flex shrink-0 items-center gap-3">
+                      <Link href={`/admin/games/${game.id}/entry`} className="text-sm font-medium text-brand hover:underline">
+                        Saisir le match
+                      </Link>
+                      <form action={deleteGameWithId}>
+                        <ConfirmSubmitButton
+                          confirmMessage={`Supprimer le match ${game.homeTeam.name} vs ${game.awayTeam.name} ? Les statistiques déjà saisies seront perdues.`}
+                          pendingText="Suppression…"
+                          className="text-sm font-medium text-red-600 hover:underline"
+                        >
+                          Supprimer
+                        </ConfirmSubmitButton>
+                      </form>
+                    </div>
+                  </div>
+                  <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-500">
+                    <span>{formatDateTime(game.scheduledAt)} · {game.season.label}</span>
+                    {game.phase && <span>· {game.phase}</span>}
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${STATUS_STYLES[game.status]}`}>
+                      {STATUS_LABELS[game.status]}
                     </span>
-                  )}
-                </p>
-              </li>
-            ))}
+                    {game.status === "FINAL" && (
+                      <span className="font-semibold text-slate-700">
+                        {game.homeScore} - {game.awayScore}
+                      </span>
+                    )}
+                  </p>
+                </li>
+              );
+            })}
             {games.length === 0 && (
               <li className="px-5 py-6 text-center text-sm text-slate-400">Aucun match programmé.</li>
             )}
@@ -91,44 +107,7 @@ export default async function AdminSchedulePage() {
               ))}
             </select>
           </div>
-          <div>
-            <label className={labelClass} htmlFor="homeTeamId">
-              Équipe à domicile
-            </label>
-            <select id="homeTeamId" name="homeTeamId" required defaultValue="" className={selectClass}>
-              <option value="">Équipe à domicile</option>
-              {CATEGORIES.map((category) => (
-                <optgroup key={category} label={CATEGORY_LABELS[category]}>
-                  {teams
-                    .filter((team) => team.category === category)
-                    .map((team) => (
-                      <option key={team.id} value={team.id}>
-                        {team.name}
-                      </option>
-                    ))}
-                </optgroup>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className={labelClass} htmlFor="awayTeamId">
-              Équipe à l&apos;extérieur
-            </label>
-            <select id="awayTeamId" name="awayTeamId" required defaultValue="" className={selectClass}>
-              <option value="">Équipe à l&apos;extérieur</option>
-              {CATEGORIES.map((category) => (
-                <optgroup key={category} label={CATEGORY_LABELS[category]}>
-                  {teams
-                    .filter((team) => team.category === category)
-                    .map((team) => (
-                      <option key={team.id} value={team.id}>
-                        {team.name}
-                      </option>
-                    ))}
-                </optgroup>
-              ))}
-            </select>
-          </div>
+          <GameTeamSelects teams={teams} />
           <div>
             <label className={labelClass} htmlFor="scheduledAt">
               Date et heure
@@ -159,9 +138,9 @@ export default async function AdminSchedulePage() {
               <option value="Final 4" />
             </datalist>
           </div>
-          <button type="submit" className={`${primaryButtonClass} mt-1`}>
+          <SubmitButton className={`${primaryButtonClass} mt-1`} pendingText="Programmation…">
             Programmer
-          </button>
+          </SubmitButton>
         </form>
       </div>
     </div>

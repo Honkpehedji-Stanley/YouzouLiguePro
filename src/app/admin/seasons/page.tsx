@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { createSeason, setActiveSeason } from "@/lib/actions/seasons";
 import { cardClass, inputClass, labelClass, primaryButtonClass, sectionTitleClass } from "@/components/admin/formStyles";
+import { SubmitButton } from "@/components/admin/SubmitButton";
+import { ConfirmSubmitButton } from "@/components/admin/ConfirmSubmitButton";
 
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat("fr-FR").format(date);
@@ -36,9 +38,13 @@ export default async function AdminSeasonsPage() {
                   </div>
                   {!season.isActive && (
                     <form action={activateWithId}>
-                      <button type="submit" className="text-sm font-medium text-brand hover:underline">
+                      <ConfirmSubmitButton
+                        confirmMessage={`Activer la saison ${season.label} ? Elle deviendra la saison affichée sur tout le site public.`}
+                        pendingText="Activation…"
+                        className="text-sm font-medium text-brand hover:underline"
+                      >
                         Activer
-                      </button>
+                      </ConfirmSubmitButton>
                     </form>
                   )}
                 </li>
@@ -74,9 +80,9 @@ export default async function AdminSeasonsPage() {
               <input id="endDate" name="endDate" type="date" required className={inputClass} />
             </div>
           </div>
-          <button type="submit" className={`${primaryButtonClass} mt-1`}>
+          <SubmitButton className={`${primaryButtonClass} mt-1`} pendingText="Création…">
             Créer
-          </button>
+          </SubmitButton>
         </form>
       </div>
     </div>

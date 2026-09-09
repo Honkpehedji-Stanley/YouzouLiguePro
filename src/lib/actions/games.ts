@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/authz";
+import { toFriendlyDeleteError } from "@/lib/prismaErrors";
 
 export async function createGame(formData: FormData) {
   await requireAdmin();
@@ -38,7 +39,11 @@ export async function createGame(formData: FormData) {
 
 export async function deleteGame(gameId: string) {
   await requireAdmin();
-  await prisma.game.delete({ where: { id: gameId } });
+  try {
+    await prisma.game.delete({ where: { id: gameId } });
+  } catch (error) {
+    toFriendlyDeleteError(error, "ce match");
+  }
   revalidatePath("/admin/schedule");
   revalidatePath("/calendrier");
   redirect("/admin/schedule");

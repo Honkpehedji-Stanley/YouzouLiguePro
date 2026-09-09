@@ -8,6 +8,8 @@ import {
   removeTeamFromSeason,
 } from "@/lib/actions/teams";
 import { CONFERENCE_LABELS } from "@/lib/league";
+import { SubmitButton } from "@/components/admin/SubmitButton";
+import { ConfirmSubmitButton } from "@/components/admin/ConfirmSubmitButton";
 import {
   cardClass,
   dangerLinkClass,
@@ -46,7 +48,7 @@ export default async function AdminTeamEditPage({
       <h1 className="mt-1 mb-6 text-2xl font-bold">{team.name}</h1>
 
       <div className="flex flex-col gap-6">
-        <form id="team-edit-form" action={updateTeamWithId} className="flex flex-col gap-6">
+        <form action={updateTeamWithId} className="flex flex-col gap-6">
           <section className={cardClass}>
             <h2 className={sectionTitleClass}>Informations</h2>
             <div className="flex flex-col gap-3">
@@ -119,18 +121,20 @@ export default async function AdminTeamEditPage({
               </div>
             </div>
           </section>
+
+          <div className="flex justify-end">
+            <SubmitButton className={primaryButtonClass}>Enregistrer</SubmitButton>
+          </div>
         </form>
 
-        <div className="flex items-center justify-between">
-          <form action={deleteTeamWithId}>
-            <button type="submit" className={dangerLinkClass}>
-              Supprimer cette équipe
-            </button>
-          </form>
-          <button type="submit" form="team-edit-form" className={primaryButtonClass}>
-            Enregistrer
-          </button>
-        </div>
+        <form action={deleteTeamWithId}>
+          <ConfirmSubmitButton
+            confirmMessage={`Supprimer définitivement l'équipe ${team.name} ? Cette action est irréversible et supprimera son historique.`}
+            className={dangerLinkClass}
+          >
+            Supprimer cette équipe
+          </ConfirmSubmitButton>
+        </form>
 
         <section className={cardClass}>
           <h2 className={sectionTitleClass}>Affectation à une conférence</h2>
@@ -159,9 +163,9 @@ export default async function AdminTeamEditPage({
                 <option value="NORD">Nord</option>
               </select>
             </div>
-            <button type="submit" className={primaryButtonClass}>
+            <SubmitButton className={primaryButtonClass} pendingText="Affectation…">
               Affecter
-            </button>
+            </SubmitButton>
           </form>
 
           <h3 className="mt-6 mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Historique</h3>
@@ -174,9 +178,13 @@ export default async function AdminTeamEditPage({
                     {ts.season.label} · Conférence {CONFERENCE_LABELS[ts.conference]}
                   </span>
                   <form action={removeWithIds}>
-                    <button type="submit" className={dangerLinkClass}>
+                    <ConfirmSubmitButton
+                      confirmMessage={`Retirer ${team.name} de la conférence ${CONFERENCE_LABELS[ts.conference]} pour ${ts.season.label} ?`}
+                      pendingText="Retrait…"
+                      className={dangerLinkClass}
+                    >
                       Retirer
-                    </button>
+                    </ConfirmSubmitButton>
                   </form>
                 </li>
               );

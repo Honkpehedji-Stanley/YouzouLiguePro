@@ -3,6 +3,7 @@ import { getActiveSeason } from "@/lib/stats";
 import { bulkUpdatePlayers } from "@/lib/actions/players";
 import { NATIONALITIES } from "@/lib/geo";
 import { primaryButtonClass } from "@/components/admin/formStyles";
+import { SubmitButton } from "@/components/admin/SubmitButton";
 
 const POSITIONS = ["PG", "SG", "SF", "PF", "C"] as const;
 const fieldInputClass =
@@ -49,12 +50,9 @@ export default async function BulkPlayerEditPage() {
       </datalist>
 
       <form action={bulkUpdatePlayers} className="flex flex-col gap-10">
-        <button
-          type="submit"
-          className={`${primaryButtonClass} self-start`}
-        >
+        <SubmitButton className={`${primaryButtonClass} self-start`} pendingText="Enregistrement de tous les joueurs…">
           Enregistrer tout
-        </button>
+        </SubmitButton>
 
         {sortedGroups.map(([teamName, teamPlayers]) => (
           <section key={teamName}>
@@ -182,12 +180,9 @@ export default async function BulkPlayerEditPage() {
           </section>
         ))}
 
-        <button
-          type="submit"
-          className={`${primaryButtonClass} self-start`}
-        >
+        <SubmitButton className={`${primaryButtonClass} self-start`} pendingText="Enregistrement de tous les joueurs…">
           Enregistrer tout
-        </button>
+        </SubmitButton>
       </form>
     </div>
   );

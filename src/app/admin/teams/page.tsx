@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { createTeam } from "@/lib/actions/teams";
 import { CATEGORY_LABELS } from "@/lib/league";
 import { cardClass, inputClass, labelClass, primaryButtonClass, selectClass, sectionTitleClass } from "@/components/admin/formStyles";
+import { SubmitButton } from "@/components/admin/SubmitButton";
 
 export default async function AdminTeamsPage() {
   const teams = await prisma.team.findMany({
@@ -89,9 +90,9 @@ export default async function AdminTeamsPage() {
               <input id="facebookUrl" name="facebookUrl" placeholder="https://facebook.com/..." className={inputClass} />
             </div>
           </div>
-          <button type="submit" className={`${primaryButtonClass} mt-1`}>
+          <SubmitButton className={`${primaryButtonClass} mt-1`} pendingText="Création…">
             Créer
-          </button>
+          </SubmitButton>
         </form>
       </div>
     </div>

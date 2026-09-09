@@ -3,6 +3,7 @@ import { AuthError } from "next-auth";
 import Image from "next/image";
 import { signIn } from "@/lib/auth";
 import { inputClass, labelClass, primaryButtonClass } from "@/components/admin/formStyles";
+import { SubmitButton } from "@/components/admin/SubmitButton";
 
 async function loginAction(formData: FormData) {
   "use server";
@@ -46,22 +47,37 @@ export default async function AdminLoginPage({
             <label htmlFor="email" className={labelClass}>
               Email
             </label>
-            <input id="email" name="email" type="email" required autoFocus className={inputClass} />
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              autoFocus
+              className={inputClass}
+            />
           </div>
           <div>
             <label htmlFor="password" className={labelClass}>
               Mot de passe
             </label>
-            <input id="password" name="password" type="password" required className={inputClass} />
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              className={inputClass}
+            />
           </div>
           {error && (
             <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
               Email ou mot de passe incorrect.
             </p>
           )}
-          <button type="submit" className={`${primaryButtonClass} mt-1 w-full`}>
+          <SubmitButton className={`${primaryButtonClass} mt-1 w-full`} pendingText="Connexion…">
             Se connecter
-          </button>
+          </SubmitButton>
         </form>
       </div>
     </div>

@@ -6,6 +6,7 @@ import { Position } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
 import { requireAdmin } from "@/lib/authz";
+import { toFriendlyDeleteError } from "@/lib/prismaErrors";
 
 function readPlayerFields(formData: FormData) {
   const firstName = String(formData.get("firstName") ?? "").trim();
@@ -91,7 +92,11 @@ export async function updatePlayer(playerId: string, formData: FormData) {
 
 export async function deletePlayer(playerId: string) {
   await requireAdmin();
-  await prisma.player.delete({ where: { id: playerId } });
+  try {
+    await prisma.player.delete({ where: { id: playerId } });
+  } catch (error) {
+    toFriendlyDeleteError(error, "ce joueur");
+  }
   revalidatePath("/admin/players");
   redirect("/admin/players");
 }

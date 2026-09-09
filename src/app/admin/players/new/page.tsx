@@ -5,6 +5,7 @@ import { AgeBirthDateFields } from "@/components/admin/AgeBirthDateFields";
 import { NationalityAndHometownFields } from "@/components/admin/NationalityFields";
 import { TeamAssignmentFields } from "@/components/admin/TeamAssignmentFields";
 import { cardClass, inputClass, labelClass, primaryButtonClass, selectClass, sectionTitleClass } from "@/components/admin/formStyles";
+import { SubmitButton } from "@/components/admin/SubmitButton";
 
 const POSITIONS = ["PG", "SG", "SF", "PF", "C"] as const;
 
@@ -137,9 +138,9 @@ export default async function NewPlayerPage() {
           >
             Annuler
           </Link>
-          <button type="submit" className={primaryButtonClass}>
+          <SubmitButton className={primaryButtonClass} pendingText="Création…">
             Créer le joueur
-          </button>
+          </SubmitButton>
         </div>
       </form>
     </div>

@@ -10,6 +10,8 @@ import {
 import { AgeBirthDateFields } from "@/components/admin/AgeBirthDateFields";
 import { NationalityAndHometownFields } from "@/components/admin/NationalityFields";
 import { TeamAssignmentFields } from "@/components/admin/TeamAssignmentFields";
+import { SubmitButton } from "@/components/admin/SubmitButton";
+import { ConfirmSubmitButton } from "@/components/admin/ConfirmSubmitButton";
 import {
   cardClass,
   dangerLinkClass,
@@ -65,7 +67,7 @@ export default async function AdminPlayerEditPage({
       </h1>
 
       <div className="flex flex-col gap-6">
-        <form id="player-edit-form" action={updatePlayerWithId} className="flex flex-col gap-6">
+        <form action={updatePlayerWithId} className="flex flex-col gap-6">
           <section className={cardClass}>
             <h2 className={sectionTitleClass}>Identité</h2>
             <div className="flex flex-col gap-3">
@@ -189,18 +191,20 @@ export default async function AdminPlayerEditPage({
             <h2 className={sectionTitleClass}>Présentation</h2>
             <textarea name="bio" rows={4} defaultValue={player.bio ?? ""} className={inputClass} />
           </section>
+
+          <div className="flex justify-end">
+            <SubmitButton className={primaryButtonClass}>Enregistrer</SubmitButton>
+          </div>
         </form>
 
-        <div className="flex items-center justify-between">
-          <form action={deletePlayerWithId}>
-            <button type="submit" className={dangerLinkClass}>
-              Supprimer ce joueur
-            </button>
-          </form>
-          <button type="submit" form="player-edit-form" className={primaryButtonClass}>
-            Enregistrer
-          </button>
-        </div>
+        <form action={deletePlayerWithId}>
+          <ConfirmSubmitButton
+            confirmMessage={`Supprimer définitivement ${player.firstName} ${player.lastName} ? Cette action est irréversible.`}
+            className={dangerLinkClass}
+          >
+            Supprimer ce joueur
+          </ConfirmSubmitButton>
+        </form>
 
         <section className={cardClass}>
           <h2 className={sectionTitleClass}>Affectation à une équipe</h2>
@@ -213,9 +217,9 @@ export default async function AdminPlayerEditPage({
               defaultJerseyNumber={currentEntry?.jerseyNumber ?? undefined}
               defaultIsCaptain={currentEntry?.isCaptain}
             />
-            <button type="submit" className={`${primaryButtonClass} self-start`}>
+            <SubmitButton className={`${primaryButtonClass} self-start`} pendingText="Affectation…">
               Affecter
-            </button>
+            </SubmitButton>
           </form>
 
           <h3 className="mt-6 mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Historique</h3>
@@ -232,9 +236,13 @@ export default async function AdminPlayerEditPage({
                   </span>
                   {entry.isActive && (
                     <form action={releaseWithIds}>
-                      <button type="submit" className={dangerLinkClass}>
+                      <ConfirmSubmitButton
+                        confirmMessage={`Libérer ${player.firstName} ${player.lastName} de ${entry.team.name} ?`}
+                        pendingText="Libération…"
+                        className={dangerLinkClass}
+                      >
                         Libérer
-                      </button>
+                      </ConfirmSubmitButton>
                     </form>
                   )}
                 </li>

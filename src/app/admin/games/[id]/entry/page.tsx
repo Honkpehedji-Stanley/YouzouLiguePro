@@ -1,7 +1,10 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { NumberStepper } from "@/components/NumberStepper";
 import { saveDraftGameStats, finalizeGameStats } from "@/lib/actions/gameEntry";
+import { SubmitButton } from "@/components/admin/SubmitButton";
+import { PlayerStatRow } from "@/components/admin/PlayerStatRow";
+import { cardClass, inputClass, labelClass, primaryButtonClass } from "@/components/admin/formStyles";
 
 function formatDateTime(date: Date) {
   return new Intl.DateTimeFormat("fr-FR", {
@@ -9,6 +12,12 @@ function formatDateTime(date: Date) {
     timeStyle: "short",
   }).format(date);
 }
+
+const STATUS_LABELS: Record<string, string> = {
+  SCHEDULED: "À venir",
+  LIVE: "En cours",
+  FINAL: "Terminé",
+};
 
 export default async function GameEntryPage({
   params,
@@ -43,55 +52,22 @@ export default async function GameEntryPage({
   const saveDraft = saveDraftGameStats.bind(null, game.id);
   const finalize = finalizeGameStats.bind(null, game.id);
 
-  const renderTeamSection = (
-    teamName: string,
-    roster: typeof rosterEntries
-  ) => (
-    <details open className="rounded-lg border border-black/10">
-      <summary className="cursor-pointer bg-black/5 px-4 py-3 font-semibold">
-        {teamName} ({roster.length} joueurs)
+  const renderTeamSection = (teamName: string, roster: typeof rosterEntries) => (
+    <details open className={cardClass}>
+      <summary className="-m-6 mb-0 cursor-pointer rounded-2xl px-6 py-4 font-semibold text-slate-800 open:rounded-b-none open:border-b open:border-slate-200">
+        {teamName} <span className="font-normal text-slate-400">({roster.length} joueurs)</span>
       </summary>
-      <div className="divide-y divide-black/10">
+      <div className="divide-y divide-slate-100">
         {roster.map((entry) => {
           const existing = statsByPlayerId.get(entry.playerId);
           const prefix = `stat__${entry.playerId}__`;
-          return (
-            <div key={entry.id} className="px-4 py-4">
-              <p className="mb-3 font-medium">
-                {entry.jerseyNumber != null && `#${entry.jerseyNumber} `}
-                {entry.player.firstName} {entry.player.lastName}
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <NumberStepper name={`${prefix}points`} label="Pts" defaultValue={existing?.points} />
-                <NumberStepper name={`${prefix}reboundsOff`} label="Reb.O" defaultValue={existing?.reboundsOff} />
-                <NumberStepper name={`${prefix}reboundsDef`} label="Reb.D" defaultValue={existing?.reboundsDef} />
-                <NumberStepper name={`${prefix}assists`} label="Pd" defaultValue={existing?.assists} />
-                <NumberStepper name={`${prefix}steals`} label="Int" defaultValue={existing?.steals} />
-                <NumberStepper name={`${prefix}blocks`} label="Ct" defaultValue={existing?.blocks} />
-                <NumberStepper name={`${prefix}turnovers`} label="Ballons perdus" defaultValue={existing?.turnovers} />
-                <NumberStepper name={`${prefix}fouls`} label="Fautes" defaultValue={existing?.fouls} />
-                <NumberStepper name={`${prefix}minutes`} label="Min" defaultValue={existing?.minutes} />
-              </div>
-              <details className="mt-3">
-                <summary className="cursor-pointer text-xs text-black/60">
-                  Détail des tirs
-                </summary>
-                <div className="mt-2 flex flex-wrap gap-3">
-                  <NumberStepper name={`${prefix}fgMade`} label="2/3pts réussis" defaultValue={existing?.fgMade} />
-                  <NumberStepper name={`${prefix}fgAttempted`} label="2/3pts tentés" defaultValue={existing?.fgAttempted} />
-                  <NumberStepper name={`${prefix}threeMade`} label="3pts réussis" defaultValue={existing?.threeMade} />
-                  <NumberStepper name={`${prefix}threeAttempted`} label="3pts tentés" defaultValue={existing?.threeAttempted} />
-                  <NumberStepper name={`${prefix}ftMade`} label="LF réussis" defaultValue={existing?.ftMade} />
-                  <NumberStepper name={`${prefix}ftAttempted`} label="LF tentés" defaultValue={existing?.ftAttempted} />
-                </div>
-              </details>
-            </div>
-          );
+          const playerName = `${entry.jerseyNumber != null ? `#${entry.jerseyNumber} ` : ""}${entry.player.firstName} ${entry.player.lastName}`;
+          return <PlayerStatRow key={entry.id} playerName={playerName} prefix={prefix} existing={existing} />;
         })}
         {roster.length === 0 && (
-          <p className="px-4 py-4 text-sm text-black/60">
-            Aucun joueur affecté à cette équipe pour cette saison. Affectez des
-            joueurs depuis la page Joueurs avant de saisir ce match.
+          <p className="py-4 text-sm text-slate-500">
+            Aucun joueur affecté à cette équipe pour cette saison. Affectez des joueurs depuis la page Joueurs
+            avant de saisir ce match.
           </p>
         )}
       </div>
@@ -99,63 +75,70 @@ export default async function GameEntryPage({
   );
 
   return (
-    <div>
-      <h1 className="mb-1 text-xl font-bold">
+    <div className="mx-auto max-w-3xl">
+      <Link href="/admin/schedule" className="text-sm text-slate-400 hover:text-brand">
+        ← Calendrier
+      </Link>
+      <h1 className="mt-1 text-2xl font-bold">
         {game.homeTeam.name} vs {game.awayTeam.name}
       </h1>
-      <p className="mb-6 text-sm text-black/60">
-        {formatDateTime(game.scheduledAt)} · {game.season.label} ·{" "}
-        {game.status === "FINAL" ? "Terminé" : game.status === "LIVE" ? "En cours" : "À venir"}
+      <p className="mb-6 text-sm text-slate-500">
+        {formatDateTime(game.scheduledAt)} · {game.season.label} · {STATUS_LABELS[game.status] ?? game.status}
       </p>
 
-      <form id="game-entry-form" className="flex flex-col gap-6">
+      <form className="flex flex-col gap-6">
         {renderTeamSection(game.homeTeam.name, homeRoster)}
         {renderTeamSection(game.awayTeam.name, awayRoster)}
+
+        <section className={cardClass}>
+          <div className="flex flex-wrap gap-4">
+            <div className="w-40">
+              <label className={labelClass} htmlFor="homeScoreOverride">
+                Score final {game.homeTeam.shortName ?? game.homeTeam.name}
+              </label>
+              <input
+                id="homeScoreOverride"
+                name="homeScoreOverride"
+                type="number"
+                min={0}
+                defaultValue={game.homeScore ?? ""}
+                placeholder="Calculé auto."
+                className={inputClass}
+              />
+            </div>
+            <div className="w-40">
+              <label className={labelClass} htmlFor="awayScoreOverride">
+                Score final {game.awayTeam.shortName ?? game.awayTeam.name}
+              </label>
+              <input
+                id="awayScoreOverride"
+                name="awayScoreOverride"
+                type="number"
+                min={0}
+                defaultValue={game.awayScore ?? ""}
+                placeholder="Calculé auto."
+                className={inputClass}
+              />
+            </div>
+          </div>
+          <p className="mt-2 text-xs text-slate-400">
+            Laisse ces champs vides pour calculer le score automatiquement à partir des points saisis ci-dessus.
+          </p>
+        </section>
+
+        <div className="flex flex-wrap gap-3">
+          <SubmitButton
+            formAction={saveDraft}
+            pendingText="Enregistrement du brouillon…"
+            className="inline-flex items-center justify-center rounded-lg border border-brand px-5 py-2.5 text-sm font-semibold text-brand transition hover:bg-brand/10 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Enregistrer le brouillon
+          </SubmitButton>
+          <SubmitButton formAction={finalize} pendingText="Clôture du match…" className={primaryButtonClass}>
+            Clôturer le match
+          </SubmitButton>
+        </div>
       </form>
-
-      <div className="mt-6 flex flex-wrap items-end gap-4 border-t border-black/10 pt-6">
-        <label className="text-sm">
-          Score final {game.homeTeam.shortName ?? game.homeTeam.name} (optionnel, sinon calculé)
-          <input
-            form="game-entry-form"
-            name="homeScoreOverride"
-            type="number"
-            min={0}
-            defaultValue={game.homeScore ?? ""}
-            className="mt-1 block w-28 rounded-md border border-black/20 px-3 py-2"
-          />
-        </label>
-        <label className="text-sm">
-          Score final {game.awayTeam.shortName ?? game.awayTeam.name} (optionnel, sinon calculé)
-          <input
-            form="game-entry-form"
-            name="awayScoreOverride"
-            type="number"
-            min={0}
-            defaultValue={game.awayScore ?? ""}
-            className="mt-1 block w-28 rounded-md border border-black/20 px-3 py-2"
-          />
-        </label>
-      </div>
-
-      <div className="mt-4 flex flex-wrap gap-3">
-        <button
-          form="game-entry-form"
-          formAction={saveDraft}
-          type="submit"
-          className="rounded-md border border-brand px-4 py-2 font-semibold text-brand hover:bg-brand/10"
-        >
-          Enregistrer le brouillon
-        </button>
-        <button
-          form="game-entry-form"
-          formAction={finalize}
-          type="submit"
-          className="rounded-md bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark"
-        >
-          Clôturer le match
-        </button>
-      </div>
     </div>
   );
 }

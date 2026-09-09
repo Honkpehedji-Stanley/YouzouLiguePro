@@ -6,6 +6,7 @@ import { Category, Conference } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
 import { requireAdmin } from "@/lib/authz";
+import { toFriendlyDeleteError } from "@/lib/prismaErrors";
 
 function readTeamFields(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
@@ -62,7 +63,11 @@ export async function updateTeam(teamId: string, formData: FormData) {
 
 export async function deleteTeam(teamId: string) {
   await requireAdmin();
-  await prisma.team.delete({ where: { id: teamId } });
+  try {
+    await prisma.team.delete({ where: { id: teamId } });
+  } catch (error) {
+    toFriendlyDeleteError(error, "cette équipe");
+  }
   revalidatePath("/admin/teams");
   redirect("/admin/teams");
 }
